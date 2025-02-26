@@ -10,11 +10,19 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const db = mysql.createConnection({
+<<<<<<< HEAD
   host: "localhost",
   user: "root",
   password: "ksk1005",
   database: "rssm_db",
   port: 3306,
+=======
+    host: 'localhost',
+    user: 'root',
+    password: 'ksk1005',
+    database: 'rssm_db',
+    port: 3307,
+>>>>>>> d86b1e1dafdf8be1ace887d062382d96a49a1f97
 });
 
 db.connect((err) => {
