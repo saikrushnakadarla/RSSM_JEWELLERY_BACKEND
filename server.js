@@ -25,18 +25,6 @@ db.connect((err) => {
   }
 });
 
-app.post("/register", (req, res) => {
-  const { name, email, password } = req.body;
-  const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-
-  db.query(sql, [name, email, password], (err, result) => {
-    if (err) {
-      console.error("Error inserting user:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-    res.status(201).json({ message: "User registered successfully!" });
-  });
-});
 
 // POST API to add a category
 app.post("/add-category", (req, res) => {
