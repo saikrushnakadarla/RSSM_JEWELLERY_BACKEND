@@ -1,4 +1,4 @@
-const db = require("../config/db");
+const db = require("../db");
 
 // Function to add a category
 const addCategory = (categoryData, callback) => {
