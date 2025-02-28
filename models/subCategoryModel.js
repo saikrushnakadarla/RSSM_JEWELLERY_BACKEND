@@ -8,7 +8,7 @@ const addSubCategory = (metalType, category, subCategory, prefix, callback) => {
 
 // Get all subcategories
 const getAllSubCategories = (callback) => {
-  const query = "SELECT * FROM subcategories";
+  const query = "SELECT * FROM subcategories ORDER BY id DESC";
   db.query(query, callback);
 };
 

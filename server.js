@@ -89,6 +89,90 @@ app.get("/get-subcategories", (req, res) => {
       res.status(200).json(results);
   });
 });
+app.post("/add-vendor", (req, res) => {
+  const {
+    vendorName,
+    mobile,
+    email,
+    address,
+    city,
+    pincode,
+    state,
+    stateCode,
+    bankAccountNumber,
+    bankName,
+    ifscCode,
+    branch,
+    gstNumber,
+    panCard,
+    aadhaarCard,
+  } = req.body;
+
+  if (
+    !vendorName ||
+    !mobile ||
+    !email ||
+    !address ||
+    !city ||
+    !pincode ||
+    !state ||
+    !stateCode ||
+    !bankAccountNumber ||
+    !bankName ||
+    !ifscCode ||
+    !branch ||
+    !gstNumber ||
+    !panCard ||
+    !aadhaarCard
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const query = `
+    INSERT INTO vendors (
+      vendor_name, mobile, email, address, city, pincode, state, state_code, 
+      bank_account_number, bank_name, ifsc_code, branch, gst_number, pan_card, aadhaar_card
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    vendorName,
+    mobile,
+    email,
+    address,
+    city,
+    pincode,
+    state,
+    stateCode,
+    bankAccountNumber,
+    bankName,
+    ifscCode,
+    branch,
+    gstNumber,
+    panCard,
+    aadhaarCard,
+  ];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Error inserting vendor:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(201).json({ message: "Vendor added successfully", id: result.insertId });
+  });
+});
+// Fetch all vendors
+app.get("/all-vendors", (req, res) => {
+  const query = "SELECT * FROM vendors ORDER BY id DESC";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching vendors:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
