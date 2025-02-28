@@ -13,7 +13,7 @@ const addCategory = (categoryData, callback) => {
 
 // Function to get all categories
 const getCategories = (callback) => {
-    const query = "SELECT * FROM categories";
+    const query = "SELECT * FROM categories ORDER BY id DESC";
 
     db.query(query, (err, results) => {
         if (err) return callback(err, null);
