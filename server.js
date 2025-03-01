@@ -67,7 +67,7 @@ app.post("/add-category", (req, res) => {
 
 // GET API to fetch all categories
 app.get("/get-categories", (req, res) => {
-  const query = "SELECT * FROM categories";
+  const query = "SELECT * FROM categories ORDER BY id DESC";
 
   db.query(query, (err, results) => {
       if (err) {
@@ -99,7 +99,7 @@ app.post("/subcategories/add-subcategory", (req, res) => {
 
 // GET API to fetch all subcategories
 app.get("/subcategories/get-subcategories", (req, res) => {
-  const query = "SELECT * FROM subcategories";
+  const query = "SELECT * FROM subcategories ORDER BY id DESC";
 
   db.query(query, (err, results) => {
       if (err) {
@@ -126,6 +126,7 @@ app.post("/vendors/add-vendor", (req, res) => {
     gstNumber,
     panCard,
     aadhaarCard,
+    password, // ✅ Include password
   } = req.body;
 
   if (
@@ -143,16 +144,18 @@ app.post("/vendors/add-vendor", (req, res) => {
     !branch ||
     !gstNumber ||
     !panCard ||
-    !aadhaarCard
+    !aadhaarCard ||
+    !password // ✅ Ensure password is checked
   ) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
+  // ✅ Fixed SQL Query: Removed double quotes around INSERT statement
   const query = `
     INSERT INTO vendors (
       vendor_name, mobile, email, address, city, pincode, state, state_code, 
-      bank_account_number, bank_name, ifsc_code, branch, gst_number, pan_card, aadhaar_card
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      bank_account_number, bank_name, ifsc_code, branch, gst_number, pan_card, aadhaar_card, password
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
 
   const values = [
@@ -171,16 +174,18 @@ app.post("/vendors/add-vendor", (req, res) => {
     gstNumber,
     panCard,
     aadhaarCard,
+    password, // ✅ Ensure password is included
   ];
 
   db.query(query, values, (err, result) => {
     if (err) {
-      console.error("Error inserting vendor:", err);
+      console.error("❌ Error inserting vendor:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    res.status(201).json({ message: "Vendor added successfully", id: result.insertId });
+    res.status(201).json({ message: "✅ Vendor added successfully", id: result.insertId });
   });
 });
+
 // Fetch all vendors
 app.get("/vendors/all-vendors", (req, res) => {
   const query = "SELECT * FROM vendors ORDER BY id DESC";
