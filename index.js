@@ -7,6 +7,7 @@ const vendorRoutes = require("./routes/vendorRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const productRoutes = require("./routes/productRoutes");
 
+
 const app = express();
 const PORT = 5000;
 
@@ -20,6 +21,11 @@ app.use('/vendors', vendorRoutes);
 app.use("/api", loginRoutes); // Using login routes
 // Use Product Routes
 app.use("/products", productRoutes);
+
+
+// Serve Static Images
+app.use("/uploads/images", express.static("uploads/images"));
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
