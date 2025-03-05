@@ -69,7 +69,7 @@
 //   getAllProducts,
 // };
 
-const db = require("../config/db");
+const db = require("../db");
 
 const Product = {
   addProduct: (data, callback) => {
