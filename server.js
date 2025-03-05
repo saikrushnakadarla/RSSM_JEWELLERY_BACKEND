@@ -11,7 +11,6 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
-
 const PORT = 5000;
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, "uploads/images");
@@ -45,24 +44,30 @@ db.connect((err) => {
   }
 });
 
-
 // POST API to add a category
 app.post("/add-category", (req, res) => {
   const { metalType, category, taxSlab, hsnCode, rBarcode } = req.body;
 
   if (!metalType || !category || !taxSlab || !hsnCode || !rBarcode) {
-      return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  const query = "INSERT INTO categories (metal_type, category, tax_slab, hsn_code, r_barcode) VALUES (?, ?, ?, ?, ?)";
-  
-  db.query(query, [metalType, category, taxSlab, hsnCode, rBarcode], (err, result) => {
+  const query =
+    "INSERT INTO categories (metal_type, category, tax_slab, hsn_code, r_barcode) VALUES (?, ?, ?, ?, ?)";
+
+  db.query(
+    query,
+    [metalType, category, taxSlab, hsnCode, rBarcode],
+    (err, result) => {
       if (err) {
-          console.error("Error inserting category:", err);
-          return res.status(500).json({ error: "Database error" });
+        console.error("Error inserting category:", err);
+        return res.status(500).json({ error: "Database error" });
       }
-      res.status(201).json({ message: "Category added successfully", id: result.insertId });
-  });
+      res
+        .status(201)
+        .json({ message: "Category added successfully", id: result.insertId });
+    }
+  );
 });
 
 // GET API to fetch all categories
@@ -70,11 +75,11 @@ app.get("/get-categories", (req, res) => {
   const query = "SELECT * FROM categories ORDER BY id DESC";
 
   db.query(query, (err, results) => {
-      if (err) {
-          console.error("Error fetching categories:", err);
-          return res.status(500).json({ error: "Database error" });
-      }
-      res.status(200).json(results);
+    if (err) {
+      console.error("Error fetching categories:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(200).json(results);
   });
 });
 
@@ -83,17 +88,20 @@ app.post("/subcategories/add-subcategory", (req, res) => {
   const { metalType, category, subCategory, prefix } = req.body;
 
   if (!metalType || !category || !subCategory || !prefix) {
-      return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  const query = "INSERT INTO subcategories (metal_type, category, sub_category, prefix) VALUES (?, ?, ?, ?)";
+  const query =
+    "INSERT INTO subcategories (metal_type, category, sub_category, prefix) VALUES (?, ?, ?, ?)";
 
   db.query(query, [metalType, category, subCategory, prefix], (err, result) => {
-      if (err) {
-          console.error("Error inserting subcategory:", err);
+    if (err) {
+      console.error("Error inserting subcategory:", err);
       return res.status(500).json({ error: "Database error" });
-      }
-      res.status(201).json({ message: "SubCategory added successfully", id: result.insertId });
+    }
+    res
+      .status(201)
+      .json({ message: "SubCategory added successfully", id: result.insertId });
   });
 });
 
@@ -102,11 +110,11 @@ app.get("/subcategories/get-subcategories", (req, res) => {
   const query = "SELECT * FROM subcategories ORDER BY id DESC";
 
   db.query(query, (err, results) => {
-      if (err) {
-          console.error("Error fetching subcategories:", err);
-          return res.status(500).json({ error: "Database error" });
-      }
-      res.status(200).json(results);
+    if (err) {
+      console.error("Error fetching subcategories:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(200).json(results);
   });
 });
 app.post("/vendors/add-vendor", (req, res) => {
@@ -182,7 +190,9 @@ app.post("/vendors/add-vendor", (req, res) => {
       console.error("❌ Error inserting vendor:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    res.status(201).json({ message: "✅ Vendor added successfully", id: result.insertId });
+    res
+      .status(201)
+      .json({ message: "✅ Vendor added successfully", id: result.insertId });
   });
 });
 
@@ -198,13 +208,14 @@ app.get("/vendors/all-vendors", (req, res) => {
   });
 });
 
-
 // 🟢 Vendor Login API (Without JWT)
 app.post("/api/vendors/login", (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, error: "All fields are required!" });
+    return res
+      .status(400)
+      .json({ success: false, error: "All fields are required!" });
   }
 
   const sql = "SELECT * FROM vendors WHERE email = ? AND password = ?";
@@ -214,7 +225,9 @@ app.post("/api/vendors/login", (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(401).json({ success: false, error: "Invalid email or password!" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid email or password!" });
     }
 
     const vendor = results[0];
@@ -222,127 +235,141 @@ app.post("/api/vendors/login", (req, res) => {
     res.json({
       success: true,
       message: "Login successful!",
-      vendor: { id: vendor.id, email: vendor.email, name: vendor.name, role: "vendor" },
+      vendor: {
+        id: vendor.id,
+        email: vendor.email,
+        name: vendor.name,
+        role: "vendor",
+      },
     });
   });
 });
 
-
-// Add Product API (With Image Handling)
 // Filter to allow only images
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
   const mimetype = allowedTypes.test(file.mimetype);
   if (extname && mimetype) {
-    return cb(null, true);
+    cb(null, true);
   } else {
     cb(new Error("Only .png, .jpg and .jpeg formats are allowed!"));
   }
 };
 
-const upload = multer({ storage, fileFilter });
+// Serve Static Images
+app.use("/uploads/images", express.static("uploads/images"));
 
-// Serve static images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Add Product API with Image Handling
+
+const upload = multer({ storage: storage });
 
 app.post("/products/add-product", upload.single("productImage"), (req, res) => {
-  try {
-    const {
-      category,
-      subcategory,
-      designName,
-      purity,
-      grossWeight,
-      stoneWeight,
-      stonePrice,
-      rate,
-      total_amount,
-      weightBeforeWastage,
-      makingCharge,
-      makingChargePercentage,
-      total_mc,
-      wastageOn,
-      wastagePercentage,
-      wastageWeight,
-      totalWeight,
-      huidNumber,
-    } = req.body;
+  const {
+    category,
+    subcategory,
+    designName,
+    purity,
+    grossWeight,
+    stoneWeight,
+    stonePrice,
+    rate,
+    total_amount,
+    weightBeforeWastage,
+    makingCharge,
+    makingChargePercentage,
+    total_mc,
+    wastageOn,
+    wastagePercentage,
+    wastageWeight,
+    totalWeight,
+    huidNumber,
+  } = req.body;
 
-    // Store only the file path
-    let productImage = req.file ? `/uploads/images/${req.file.filename}` : null;
+  // Get the filename instead of storing the whole image as BLOB
+  const productImage = req.file ? req.file.filename : null;
 
-    const sql = `
-      INSERT INTO products 
-      (category, subcategory, design_name, purity, gross_weight, stone_weight, stone_price, rate, 
-      total_amount, weight_before_wastage, making_charge, making_charge_percentage, total_mc, 
-      wastage_on, wastage_percentage, wastage_weight, total_weight, huid_number, product_image) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
-
-    db.query(
-      sql,
-      [
-        category,
-        subcategory,
-        designName,
-        purity,
-        grossWeight || 0,
-        stoneWeight || 0,
-        stonePrice || 0,
-        rate || 0,
-        total_amount || 0,
-        weightBeforeWastage || 0,
-        makingCharge,
-        makingChargePercentage || 0,
-        total_mc || 0,
-        wastageOn,
-        wastagePercentage || 0,
-        wastageWeight || 0,
-        totalWeight || 0,
-        huidNumber,
-        productImage, // Store file path instead of Base64
-      ],
-      (err, result) => {
-        if (err) {
-          console.error("❌ Database Insert Error:", err.sqlMessage);
-          return res.status(500).json({ error: err.sqlMessage });
-        }
-        res.status(201).json({ message: "✅ Product added successfully!", imagePath: productImage });
-      }
-    );
-  } catch (error) {
-    console.error("❌ Server Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  if (
+    !category ||
+    !subcategory ||
+    !designName ||
+    !purity ||
+    !grossWeight ||
+    !rate ||
+    !total_amount
+  ) {
+    return res
+      .status(400)
+      .json({ error: "All required fields must be filled!" });
   }
+
+  const query = `
+    INSERT INTO products (
+      category, subcategory, design_name, purity, gross_weight, 
+      stone_weight, stone_price, rate, total_amount, weight_before_wastage, 
+      making_charge, making_charge_percentage, total_mc, wastage_on, 
+      wastage_percentage, wastage_weight, total_weight, huid_number, product_image
+    ) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    category,
+    subcategory,
+    designName,
+    purity,
+    grossWeight,
+    stoneWeight,
+    stonePrice,
+    rate,
+    total_amount,
+    weightBeforeWastage,
+    makingCharge,
+    makingChargePercentage,
+    total_mc,
+    wastageOn,
+    wastagePercentage,
+    wastageWeight,
+    totalWeight,
+    huidNumber,
+    productImage, // ✅ Save filename instead of binary
+  ];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Database Error:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error while adding product" });
+    }
+    res
+      .status(201)
+      .json({ message: "Product added successfully!", id: result.insertId });
+  });
 });
 
 app.get("/products/get-products", (req, res) => {
-  try {
-    const sql = "SELECT * FROM products"; // Fetch all products
+  const sql =
+    "SELECT id, category, subcategory, design_name, purity, gross_weight, product_image FROM products";
 
-    db.query(sql, (err, results) => {
-      if (err) {
-        console.error("❌ Database Fetch Error:", err.sqlMessage);
-        return res.status(500).json({ error: err.sqlMessage });
-      }
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
 
-      // Update image paths to include the full URL
-      const products = results.map((product) => ({
-        ...product,
-        product_image: product.product_image
-          ? `http://localhost:5000${product.product_image}` // Append server URL
-          : null,
-      }));
+    // Convert stored filename into a URL
+    const products = results.map((product) => ({
+      ...product,
+      product_image: product.product_image
+        ? `http://localhost:5000/uploads/images/${product.product_image}`
+        : null, // Return null if no image
+    }));
 
-      res.status(200).json(products);
-    });
-  } catch (error) {
-    console.error("❌ Server Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    res.json(products);
+  });
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
