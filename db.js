@@ -1,20 +1,20 @@
 const mysql = require("mysql2");
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'ksk1005',
-    database: 'rssm_db',
-    port: 3306,
-});
-
 // const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "Tharun@123",
-//   database: "rssm_db",
-//   port: 3307,
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'ksk1005',
+//     database: 'rssm_db',
+//     port: 3306,
 // });
+
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Tharun@123",
+  database: "rssm_db",
+  port: 3307,
+});
 
 db.connect((err) => {
   if (err) {
