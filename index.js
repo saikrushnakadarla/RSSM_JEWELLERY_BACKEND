@@ -9,7 +9,7 @@ const productRoutes = require("./routes/productRoutes");
 const rateRoutes = require("./routes/rateRoutes");
 
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,6 +23,7 @@ app.use("/api", loginRoutes); // Using login routes
 app.use("/products", productRoutes);
 
 app.use("/api", rateRoutes);
+// app.use("/api/vendors", vendorRoutes);
 
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));

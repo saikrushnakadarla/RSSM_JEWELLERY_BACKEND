@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 const mysql = require("mysql2");
+const jwt = require("jsonwebtoken");
+const secretKey = "Tharun@2001"; // Use the same secret key everywhere
 
 const app = express();
 app.use(express.json());
@@ -31,9 +33,9 @@ const storage = multer.diskStorage({
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "ksk1005",
+  password: "Tharun@123",
   database: "rssm_db",
-  port: 3306,
+  port: 3307,
 });
 
 db.connect((err) => {
@@ -208,6 +210,54 @@ app.get("/vendors/all-vendors", (req, res) => {
   });
 });
 
+
+app.get("/vendors/:id", (req, res) => {
+  const vendorId = req.params.id;
+
+  if (!vendorId) {
+    return res.status(400).json({ error: "Vendor ID is required" });
+  }
+
+  const query = "SELECT * FROM vendors WHERE id = ?";
+  
+  db.query(query, [vendorId], (err, result) => {
+    if (err) {
+      console.error("❌ Error fetching vendor:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Vendor not found" });
+    }
+
+    res.json(result[0]); // Return the single vendor object
+  });
+});
+
+
+app.post("/auth/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const query = "SELECT * FROM vendors WHERE email = ? AND password = ?";
+  db.query(query, [email, password], (err, results) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+
+    if (results.length === 0)
+      return res.status(401).json({ error: "Invalid credentials" });
+
+    const user = results[0];
+
+    // Generate JWT Token
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      secretKey,
+      { expiresIn: "1h" } // Token expires in 1 hour
+    );
+
+    res.json({ token, user });
+  });
+});
+
 app.post("/api/vendors/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -240,12 +290,7 @@ app.post("/api/vendors/login", (req, res) => {
     res.json({
       success: true,
       message: "Login successful!",
-      vendor: {
-        id: vendor.id,
-        email: vendor.email,
-        name: vendor.vendor_name,
-        role: "vendor",
-      },
+      vendor 
     });
   });
 });
@@ -256,7 +301,9 @@ app.post("/vendors/update-status", (req, res) => {
   const { vendorId, status } = req.body;
 
   if (!vendorId || !status) {
-    return res.status(400).json({ error: "Vendor ID and status are required!" });
+    return res
+      .status(400)
+      .json({ error: "Vendor ID and status are required!" });
   }
 
   const query = "UPDATE vendors SET status = ? WHERE id = ?";
@@ -268,7 +315,8 @@ app.post("/vendors/update-status", (req, res) => {
 
     if (status === "approved") {
       // ✅ Fetch vendor_name, email, and password properly
-      const vendorQuery = "SELECT vendor_name, email, password FROM vendors WHERE id = ?";
+      const vendorQuery =
+        "SELECT vendor_name, email, password FROM vendors WHERE id = ?";
       db.query(vendorQuery, [vendorId], async (err, vendorResult) => {
         if (err) {
           console.error("Error fetching vendor details:", err);
@@ -315,6 +363,64 @@ app.post("/vendors/update-status", (req, res) => {
     }
   });
 });
+
+app.put("/vendors/update/:id", (req, res) => {
+  const vendorId = req.params.id;
+  const {
+    vendorName,
+    mobile,
+    email,
+    address,
+    city,
+    pincode,
+    state,
+    stateCode,
+    bankAccountNumber,
+    bankName,
+    ifscCode,
+    branch,
+    gstNumber,
+    panCard,
+    aadhaarCard,
+  } = req.body;
+
+  const query = `
+    UPDATE vendors SET 
+      vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
+      pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
+      bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
+      pan_card = ?, aadhaar_card = ? 
+    WHERE id = ?;
+  `;
+
+  const values = [
+    vendorName,
+    mobile,
+    email,
+    address,
+    city,
+    pincode,
+    state,
+    stateCode,
+    bankAccountNumber,
+    bankName,
+    ifscCode,
+    branch,
+    gstNumber,
+    panCard,
+    aadhaarCard,
+    vendorId,
+  ];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Error updating vendor:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json({ message: "Vendor updated successfully" });
+  });
+});
+
 
 
 // Filter to allow only images
@@ -442,6 +548,68 @@ app.get("/products/get-products", (req, res) => {
     res.json(products);
   });
 });
+
+
+app.get("/auth/me", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid token" });
+
+    const userId = decoded.id;
+    const query = "SELECT * FROM vendors WHERE id = ?"; // Fetch all vendor details
+
+    db.query(query, [userId], (err, results) => {
+      if (err) return res.status(500).json({ error: "Database error" });
+
+      if (results.length === 0) return res.status(404).json({ error: "User not found" });
+
+      res.json(results[0]); // Return full vendor details
+    });
+  });
+});
+
+
+
+// const verifyToken = (req, res, next) => {
+//   const token = req.headers["authorization"];
+
+//   if (!token) {
+//     return res.status(403).json({ error: "No token provided!" });
+//   }
+
+//   jwt.verify(token.split(" ")[1], secretKey, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).json({ error: "Unauthorized!" });
+//     }
+
+//     req.vendorId = decoded.id; // Store vendor ID from the token
+//     next();
+//   });
+// };
+
+
+// app.get("/vendors/profile", verifyToken, (req, res) => {
+//   const vendorId = req.vendorId; // Extract vendor ID from JWT
+
+//   const query = "SELECT * FROM vendors WHERE id = ?";
+//   db.query(query, [vendorId], (err, results) => {
+//     if (err) {
+//       console.error("Error fetching vendor details:", err);
+//       return res.status(500).json({ error: "Database error" });
+//     }
+
+//     if (results.length === 0) {
+//       return res.status(404).json({ error: "Vendor not found!" });
+//     }
+
+//     res.json(results[0]); // Return only the vendor's details
+//   });
+// });
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
