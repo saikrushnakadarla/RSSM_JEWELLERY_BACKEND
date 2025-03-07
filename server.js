@@ -208,7 +208,6 @@ app.get("/vendors/all-vendors", (req, res) => {
   });
 });
 
-// 🟢 Vendor Login API (Without JWT)
 app.post("/api/vendors/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -232,18 +231,91 @@ app.post("/api/vendors/login", (req, res) => {
 
     const vendor = results[0];
 
+    if (vendor.status !== "approved") {
+      return res
+        .status(403)
+        .json({ success: false, error: "Your account is not approved yet!" });
+    }
+
     res.json({
       success: true,
       message: "Login successful!",
       vendor: {
         id: vendor.id,
         email: vendor.email,
-        name: vendor.name,
+        name: vendor.vendor_name,
         role: "vendor",
       },
     });
   });
 });
+
+const nodemailer = require("nodemailer");
+
+app.post("/vendors/update-status", (req, res) => {
+  const { vendorId, status } = req.body;
+
+  if (!vendorId || !status) {
+    return res.status(400).json({ error: "Vendor ID and status are required!" });
+  }
+
+  const query = "UPDATE vendors SET status = ? WHERE id = ?";
+  db.query(query, [status, vendorId], async (err, result) => {
+    if (err) {
+      console.error("Error updating vendor status:", err);
+      return res.status(500).json({ error: "Database error!" });
+    }
+
+    if (status === "approved") {
+      // ✅ Fetch vendor_name, email, and password properly
+      const vendorQuery = "SELECT vendor_name, email, password FROM vendors WHERE id = ?";
+      db.query(vendorQuery, [vendorId], async (err, vendorResult) => {
+        if (err) {
+          console.error("Error fetching vendor details:", err);
+          return;
+        }
+
+        if (!vendorResult || vendorResult.length === 0) {
+          console.error("❌ No vendor found with the given ID!");
+          return res.status(404).json({ error: "Vendor not found!" });
+        }
+
+        // ✅ Extract vendor details safely
+        const vendorName = vendorResult[0].vendor_name || "Vendor"; // Default name if null
+        const vendorEmail = vendorResult[0].email;
+        const password = vendorResult[0].password || `${vendorName}@123`; // ✅ Ensure vendor_name is not undefined
+
+        // Configure Email Transport
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "tharunkumarreddy1212@gmail.com", // Your email
+            pass: "frzx asad aylm krpr", // App password
+          },
+        });
+
+        const mailOptions = {
+          from: "tharunkumarreddy1212@gmail.com",
+          to: vendorEmail,
+          subject: "🎉 Vendor Approval Notification",
+          text: `Dear ${vendorName},\n\nYour account has been approved! 🎉\n\nYou can now log in:\n\n🔹 **Email:** ${vendorEmail}\n🔹 **Password:** ${password}\n\nThank you!`,
+        };
+
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log(`✅ Approval email sent to: ${vendorEmail}`);
+          return res.json({ message: "Vendor status updated successfully!" });
+        } catch (emailError) {
+          console.error("❌ Error sending email:", emailError);
+          return res.status(500).json({ error: "Failed to send email!" });
+        }
+      });
+    } else {
+      res.json({ message: "Vendor status updated successfully!" });
+    }
+  });
+});
+
 
 // Filter to allow only images
 const fileFilter = (req, file, cb) => {
