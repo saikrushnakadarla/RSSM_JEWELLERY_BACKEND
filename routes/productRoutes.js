@@ -1,36 +1,3 @@
-// const express = require("express");
-// const router = express.Router();
-// const ProductController = require("../controllers/productController");
-// const multer = require("multer");
-
-// // Configure Multer Storage
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/"); // Store images in the 'uploads' folder
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "-" + file.originalname); // Unique filename
-//   },
-// });
-
-// // File Filter to accept only images
-// const fileFilter = (req, file, cb) => {
-//   if (file.mimetype.startsWith("image/")) {
-//     cb(null, true);
-//   } else {
-//     cb(new Error("❌ Only image files are allowed!"), false);
-//   }
-// };
-
-// const upload = multer({ storage, fileFilter });
-
-// // Define Routes
-// router.post("/add-product", upload.single("productImage"), ProductController.addProduct);
-// router.get("/get-products", ProductController.getAllProducts);
-
-// module.exports = router;
-
-
 const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
@@ -44,7 +11,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Multer setup
+// Multer setup for image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/images/");
@@ -61,14 +28,18 @@ const fileFilter = (req, file, cb) => {
   if (extname && mimetype) {
     cb(null, true);
   } else {
-    cb(new Error("Only .png, .jpg and .jpeg formats are allowed!"));
+    cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!"));
   }
 };
 
 const upload = multer({ storage: storage, fileFilter });
 
+// Multer setup for Excel file upload
+const excelUpload = multer({ dest: "uploads/excel/" });
+
 // Routes
 router.post("/add-product", upload.single("productImage"), productController.addProduct);
 router.get("/get-products", productController.getProducts);
+router.post("/upload-excel", excelUpload.single("file"), productController.uploadExcel); // New Route
 
 module.exports = router;
