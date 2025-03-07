@@ -24,6 +24,7 @@ exports.addProduct = (req, res) => {
     totalWeight,
     huidNumber,
     total_price,
+    product_code,
   } = req.body;
 
   const productImage = req.file ? req.file.filename : null;
@@ -54,6 +55,7 @@ exports.addProduct = (req, res) => {
     huidNumber || "",
     productImage,
     total_price || 0,
+    product_code,
   ];
 
   Product.addProduct(values, (err, result) => {
@@ -84,8 +86,8 @@ exports.getProducts = (req, res) => {
   });
 };
 
-// ✅ Upload Excel file and store data in DB
-exports.uploadExcel = (req, res) => {
+// ✅ Upload Excel file and store only new data in DB
+exports.uploadExcel = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "❌ No file uploaded" });
   }
@@ -108,8 +110,19 @@ exports.uploadExcel = (req, res) => {
       return res.status(400).json({ error: "❌ Uploaded Excel file is empty!" });
     }
 
-    // 🔹 Ensure correct field names match your database
-    const products = jsonData.map((row) => [
+    // 🔹 Get existing HUIDs from database
+    const existingProducts = await Product.getAllHUIDNumbers();
+    const existingHUIDs = new Set(existingProducts.map((p) => p.huid_number));
+
+    // 🔹 Filter only new products
+    const newProducts = jsonData.filter((row) => !existingHUIDs.has(row["HUID Number"]));
+
+    if (newProducts.length === 0) {
+      return res.status(400).json({ error: "✅ No new products to add! All are already in the database." });
+    }
+
+    // 🔹 Prepare data for bulk insert
+    const products = newProducts.map((row) => [
       row["Category"] || "",
       row["Subcategory"] || "",
       row["Design Name"] || "",
@@ -128,19 +141,21 @@ exports.uploadExcel = (req, res) => {
       row["Wastage Weight"] || 0,
       row["Total Weight"] || 0,
       row["HUID Number"] || "",
+     
       null, // Placeholder for product_image
       row["Total Price"] || 0,
+      row["Product Code"] || "",
     ]);
 
-    console.log("📂 Formatted Data for DB:", products);
+    console.log("📂 New Products for DB:", products);
 
-    // Insert into database
+    // Insert only new products
     Product.bulkInsert(products, (err, result) => {
       if (err) {
         console.error("❌ Database Error:", err);
         return res.status(500).json({ error: "Database error while uploading Excel data" });
       }
-      res.status(201).json({ message: "✅ Excel data uploaded successfully!" });
+      res.status(201).json({ message: `✅ ${newProducts.length} new products uploaded successfully!` });
     });
 
   } catch (error) {
