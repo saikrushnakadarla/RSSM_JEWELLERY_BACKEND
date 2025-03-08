@@ -9,7 +9,7 @@ const productRoutes = require("./routes/productRoutes");
 const rateRoutes = require("./routes/rateRoutes");
 
 const app = express();
-const PORT = 5001;
+const PORT = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
