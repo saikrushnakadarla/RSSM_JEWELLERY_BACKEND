@@ -33,9 +33,9 @@ const storage = multer.diskStorage({
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Tharun@123",
+  password: "ksk1005",
   database: "rssm_db",
-  port: 3307,
+  port: 3306,
 });
 
 db.connect((err) => {
