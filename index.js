@@ -24,7 +24,11 @@ app.use("/api", loginRoutes); // Using login routes
 app.use("/products", productRoutes);
 
 app.use("/api", rateRoutes);
+
 app.use("/orders", orderRoutes);
+
+// app.use("/api/vendors", vendorRoutes);
+
 
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));
