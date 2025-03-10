@@ -98,6 +98,7 @@ const vendorLogin = (req, res) => {
   const sql = "SELECT * FROM vendors WHERE email = ? AND password = ?";
   db.query(sql, [email, password], (err, results) => {
     if (err) {
+      console.error("Database error:", err);
       return res.status(500).json({ success: false, error: "Database error!" });
     }
 
@@ -165,13 +166,13 @@ const updateVendorStatus = (req, res) => {
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "tharunkumarreddy1212@gmail.com",
-            pass: "frzx asad aylm krpr",
+            user: "solutionsitech845@gmail.com",
+            pass: "yioq wuqy zofp jduj",
           },
         });
 
         const mailOptions = {
-          from: "tharunkumarreddy1212@gmail.com",
+          from: "solutionsitech845@gmail.com",
           to: vendorEmail,
           subject: "🎉 Vendor Approval Notification",
           text: `Dear ${vendorName},\n\nYour account has been approved! 🎉\n\nLogin details:\n🔹 Email: ${vendorEmail}\n🔹 Password: ${password}\n\nThank you!`,
@@ -192,4 +193,22 @@ const updateVendorStatus = (req, res) => {
   });
 };
 
-module.exports = { addVendor, getAllVendors, vendorLogin, updateVendorStatus };
+// Update Vendor
+const updateVendor = (req, res) => {
+  const vendorId = req.params.id;
+  const vendorData = req.body;
+
+  if (!vendorId || !vendorData) {
+    return res.status(400).json({ error: "Vendor ID and data are required!" });
+  }
+
+  Vendor.updateVendor(vendorId, vendorData, (err, result) => {
+    if (err) {
+      console.error("Error updating vendor:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json({ message: "Vendor updated successfully" });
+  });
+};
+
+module.exports = { addVendor, getAllVendors, vendorLogin, updateVendorStatus, updateVendor };
