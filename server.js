@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Tharun@123",
+  password: "sharvani@123",
   database: "rssm_db",
   port: 3307,
 });
@@ -337,13 +337,13 @@ app.post("/vendors/update-status", (req, res) => {
         const transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "tharunkumarreddy1212@gmail.com", // Your email
-            pass: "frzx asad aylm krpr", // App password
+            user: "solutionsitech845@gmail.com", // Your email
+            pass: "yioq wuqy zofp jduj", // App password
           },
         });
 
         const mailOptions = {
-          from: "tharunkumarreddy1212@gmail.com",
+          from: "solutionsitech845@gmail.com",
           to: vendorEmail,
           subject: "🎉 Vendor Approval Notification",
           text: `Dear ${vendorName},\n\nYour account has been approved! 🎉\n\nYou can now log in:\n\n🔹 **Email:** ${vendorEmail}\n🔹 **Password:** ${password}\n\nThank you!`,
