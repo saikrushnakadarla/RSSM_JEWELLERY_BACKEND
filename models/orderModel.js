@@ -24,6 +24,8 @@ const Order = {
       product_image,
       total_price,
       product_code,
+      vendor_id,
+      order_id
     } = orderData;
 
     const query = `
@@ -31,8 +33,8 @@ const Order = {
         category, subcategory, design_name, purity, gross_weight, stone_weight,
         stone_price, rate, total_amount, weight_before_wastage, making_charge,
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
-        wastage_weight, total_weight, huid_number, product_image, total_price, product_code
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,product_id,order_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
     `;
 
     db.query(
@@ -41,7 +43,7 @@ const Order = {
         category, subcategory, design_name, purity, gross_weight, stone_weight,
         stone_price, rate, total_amount, weight_before_wastage, making_charge,
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
-        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,
+        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,vendor_id,order_id
       ],
       callback
     );
