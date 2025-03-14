@@ -9,6 +9,7 @@ const productRoutes = require("./routes/productRoutes");
 const rateRoutes = require("./routes/rateRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const vendorIdRoute = require("./routes/vendorIdRoutes");
+const editProductRoute = require("./routes/editProductRoute");
 
 const app = express();
 const PORT = 5000;
@@ -29,6 +30,7 @@ app.use("/api", rateRoutes);
 app.use("/orders", orderRoutes);
 
 app.use("/", vendorIdRoute);
+app.use("/", editProductRoute);
 
 // app.use("/api/vendors", vendorRoutes);
 
