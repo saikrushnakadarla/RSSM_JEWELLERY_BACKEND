@@ -25,6 +25,7 @@ exports.addProduct = (req, res) => {
     huidNumber,
     total_price,
     product_code,
+    vendor_id,
   } = req.body;
 
   const productImage = req.file ? req.file.filename : null;
@@ -56,6 +57,7 @@ exports.addProduct = (req, res) => {
     productImage,
     total_price || 0,
     product_code,
+    vendor_id,
   ];
 
   Product.addProduct(values, (err, result) => {

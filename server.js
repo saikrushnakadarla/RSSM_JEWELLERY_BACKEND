@@ -33,9 +33,9 @@ const storage = multer.diskStorage({
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "sharvani@123",
+  password: "ksk1005",
   database: "rssm_db",
-  port: 3306,
+  port: 3307,
 });
 
 db.connect((err) => {
@@ -573,41 +573,41 @@ app.get("/auth/me", (req, res) => {
 
 
 
-// const verifyToken = (req, res, next) => {
-//   const token = req.headers["authorization"];
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
 
-//   if (!token) {
-//     return res.status(403).json({ error: "No token provided!" });
-//   }
+  if (!token) {
+    return res.status(403).json({ error: "No token provided!" });
+  }
 
-//   jwt.verify(token.split(" ")[1], secretKey, (err, decoded) => {
-//     if (err) {
-//       return res.status(401).json({ error: "Unauthorized!" });
-//     }
+  jwt.verify(token.split(" ")[1], secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized!" });
+    }
 
-//     req.vendorId = decoded.id; // Store vendor ID from the token
-//     next();
-//   });
-// };
+    req.vendorId = decoded.id; // Store vendor ID from the token
+    next();
+  });
+};
 
 
-// app.get("/vendors/profile", verifyToken, (req, res) => {
-//   const vendorId = req.vendorId; // Extract vendor ID from JWT
+app.get("/vendors/profile", verifyToken, (req, res) => {
+  const vendorId = req.vendorId; // Extract vendor ID from JWT
 
-//   const query = "SELECT * FROM vendors WHERE id = ?";
-//   db.query(query, [vendorId], (err, results) => {
-//     if (err) {
-//       console.error("Error fetching vendor details:", err);
-//       return res.status(500).json({ error: "Database error" });
-//     }
+  const query = "SELECT * FROM vendors WHERE id = ?";
+  db.query(query, [vendorId], (err, results) => {
+    if (err) {
+      console.error("Error fetching vendor details:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
 
-//     if (results.length === 0) {
-//       return res.status(404).json({ error: "Vendor not found!" });
-//     }
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Vendor not found!" });
+    }
 
-//     res.json(results[0]); // Return only the vendor's details
-//   });
-// });
+    res.json(results[0]); // Return only the vendor's details
+  });
+});
 
 
 
