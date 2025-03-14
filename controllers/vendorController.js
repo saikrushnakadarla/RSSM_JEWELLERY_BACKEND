@@ -70,7 +70,7 @@ const addVendor = (req, res) => {
     }
     res
       .status(201)
-      .json({ message: "Vendor added successfully", id: result.insertId });
+      .json({ message: "Registered Succesfully. please wait for admin approval", id: result.insertId });
   });
 };
 
