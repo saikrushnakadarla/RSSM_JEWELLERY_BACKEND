@@ -58,6 +58,7 @@ router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
         huidNumber,
         product_code,
         vendor_id,
+        quantity,
         existingImage // Send this from frontend if no new image is uploaded
     } = req.body;
 
@@ -87,7 +88,8 @@ router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
             huid_number = ?, 
             product_code = ?, 
             product_image = ?, 
-            vendor_id = ?
+            vendor_id = ?,
+            quantity=?
         WHERE id = ?`;
 
     const values = [
@@ -113,6 +115,7 @@ router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
         product_code,
         productImage, // Use new image if uploaded, else keep existing image
         vendor_id,
+        quantity,
         productId,
     ];
 
