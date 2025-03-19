@@ -52,6 +52,31 @@ router.get("/update-quantity", (req, res) => {
   });
 });
 
+// DELETE route to delete an order
+router.delete("/orders/delete-order/:id", async (req, res) => {
+  const orderId = req.params.id;
+
+  try {
+    const deleteQuery = "DELETE FROM orders WHERE id = ?";
+
+    // Use db.promise().execute() to return a proper result array
+    const [result] = await db.promise().execute(deleteQuery, [orderId]);
+
+   
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Order deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Order not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting order:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
   
   
 
