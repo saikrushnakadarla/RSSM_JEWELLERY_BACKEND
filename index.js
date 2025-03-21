@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const vendorIdRoute = require("./routes/vendorIdRoutes");
 const editProductRoute = require("./routes/editProductRoute");
 const statusRoute = require("./routes/statusRoute");
+const agentRoutes = require("./routes/agentRoutes");
 
 const app = express();
 const PORT = 5000;
@@ -33,6 +34,7 @@ app.use("/orders", orderRoutes);
 app.use("/", vendorIdRoute);
 app.use("/", editProductRoute);
 app.use("/", statusRoute);
+app.use("/", agentRoutes);
 
 // app.use("/api/vendors", vendorRoutes);
 

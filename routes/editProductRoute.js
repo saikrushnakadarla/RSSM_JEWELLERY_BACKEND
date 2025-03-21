@@ -33,7 +33,6 @@ router.get("/get-product/:id", (req, res) => {
     });
 });
 
-// Update Product
 router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
     const productId = req.params.id;
     const {
@@ -58,75 +57,90 @@ router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
         huidNumber,
         product_code,
         vendor_id,
-        quantity,
-        existingImage // Send this from frontend if no new image is uploaded
+        quantity
     } = req.body;
 
-    // Preserve existing image if no new image is uploaded
-    const productImage = req.file ? req.file.filename : existingImage;
+    // Check if a new file is uploaded
+    const newImage = req.file ? req.file.filename : null;
 
-    const query = `
-        UPDATE products SET 
-            category = ?, 
-            subcategory = ?, 
-            design_name = ?, 
-            purity = ?, 
-            gross_weight = ?, 
-            stone_weight = ?, 
-            stone_price = ?, 
-            rate = ?, 
-            total_amount = ?, 
-            weight_before_wastage = ?, 
-            making_charge = ?, 
-            making_charge_percentage = ?, 
-            total_mc = ?, 
-            wastage_on = ?, 
-            wastage_percentage = ?, 
-            wastage_weight = ?, 
-            total_weight = ?, 
-            total_price = ?, 
-            huid_number = ?, 
-            product_code = ?, 
-            product_image = ?, 
-            vendor_id = ?,
-            quantity=?
-        WHERE id = ?`;
-
-    const values = [
-        category,
-        subcategory,
-        designName,
-        purity,
-        grossWeight,
-        stoneWeight,
-        stonePrice,
-        rate,
-        total_amount,
-        weightBeforeWastage,
-        makingCharge,
-        makingChargePercentage,
-        total_mc,
-        wastageOn,
-        wastagePercentage,
-        wastageWeight,
-        totalWeight,
-        total_price,
-        huidNumber,
-        product_code,
-        productImage, // Use new image if uploaded, else keep existing image
-        vendor_id,
-        quantity,
-        productId,
-    ];
-
-    db.query(query, values, (err, results) => {
+    // Fetch existing image only if no new image is uploaded
+    const getImageQuery = "SELECT product_image FROM products WHERE id = ?";
+    db.query(getImageQuery, [productId], (err, results) => {
         if (err) {
             return res.status(500).json({ error: "Database error", details: err });
         }
 
-        res.json({ message: "Product updated successfully" });
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const existingImage = results[0].product_image;
+        const finalImage = newImage || existingImage; // Keep old image if no new one is uploaded
+
+        // Update product details
+        const updateQuery = `
+            UPDATE products SET 
+                category = ?, 
+                subcategory = ?, 
+                design_name = ?, 
+                purity = ?, 
+                gross_weight = ?, 
+                stone_weight = ?, 
+                stone_price = ?, 
+                rate = ?, 
+                total_amount = ?, 
+                weight_before_wastage = ?, 
+                making_charge = ?, 
+                making_charge_percentage = ?, 
+                total_mc = ?, 
+                wastage_on = ?, 
+                wastage_percentage = ?, 
+                wastage_weight = ?, 
+                total_weight = ?, 
+                total_price = ?, 
+                huid_number = ?, 
+                product_code = ?, 
+                product_image = ?, 
+                vendor_id = ?,
+                quantity=?
+            WHERE id = ?`;
+
+        const values = [
+            category,
+            subcategory,
+            designName,
+            purity,
+            grossWeight,
+            stoneWeight,
+            stonePrice,
+            rate,
+            total_amount,
+            weightBeforeWastage,
+            makingCharge,
+            makingChargePercentage,
+            total_mc,
+            wastageOn,
+            wastagePercentage,
+            wastageWeight,
+            totalWeight,
+            total_price,
+            huidNumber,
+            product_code,
+            finalImage, // Use new image if uploaded, else keep existing image
+            vendor_id,
+            quantity,
+            productId,
+        ];
+
+        db.query(updateQuery, values, (updateErr, results) => {
+            if (updateErr) {
+                return res.status(500).json({ error: "Database error", details: updateErr });
+            }
+            res.json({ message: "Product updated successfully", product_image: finalImage });
+        });
     });
 });
+
 
 
 // Delete Product
