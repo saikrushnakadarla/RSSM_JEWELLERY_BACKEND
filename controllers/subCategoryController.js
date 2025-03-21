@@ -1,4 +1,4 @@
-const SubCategory = require('../models/subCategoryModel');
+const SubCategory = require("../models/subCategoryModel");
 
 // Add a new subcategory
 const addSubCategory = (req, res) => {
@@ -8,13 +8,22 @@ const addSubCategory = (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  SubCategory.addSubCategory(metalType, category, subCategory, prefix, (err, result) => {
-    if (err) {
-      console.error("Error inserting subcategory:", err);
-      return res.status(500).json({ error: "Database error" });
+  SubCategory.addSubCategory(
+    metalType,
+    category,
+    subCategory,
+    prefix,
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting subcategory:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.status(201).json({
+        message: "SubCategory added successfully",
+        id: result.insertId,
+      });
     }
-    res.status(201).json({ message: "SubCategory added successfully", id: result.insertId });
-  });
+  );
 };
 
 // Get all subcategories
@@ -28,4 +37,62 @@ const getAllSubCategories = (req, res) => {
   });
 };
 
-module.exports = { addSubCategory, getAllSubCategories };
+// Update a subcategory
+const updateSubCategory = (req, res) => {
+  const { id } = req.params;
+  const { metalType, category, subCategory, prefix } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "SubCategory ID is required" });
+  }
+
+  const query = `
+    UPDATE subcategories 
+    SET metal_type = ?, category = ?, sub_category = ?, prefix = ? 
+    WHERE id = ?
+  `;
+
+  db.query(
+    query,
+    [metalType, category, subCategory, prefix, id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating subcategory:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "SubCategory not found" });
+      }
+      res.status(200).json({ message: "SubCategory updated successfully" });
+    }
+  );
+};
+
+// Delete a subcategory
+const deleteSubCategory = (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "SubCategory ID is required" });
+  }
+
+  const query = "DELETE FROM subcategories WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting subcategory:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "SubCategory not found" });
+    }
+    res.status(200).json({ message: "SubCategory deleted successfully" });
+  });
+};
+
+module.exports = {
+  addSubCategory,
+  getAllSubCategories,
+  updateSubCategory,
+  deleteSubCategory,
+};
