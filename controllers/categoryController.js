@@ -29,4 +29,46 @@ const getCategories = (req, res) => {
     });
 };
 
-module.exports = { addCategory, getCategories };
+// Controller to update a category
+const updateCategory = (req, res) => {
+    const categoryId = req.params.id;
+    const updatedData = req.body;
+
+    if (!categoryId) {
+        return res.status(400).json({ error: "Category ID is required" });
+    }
+
+    Category.updateCategory(categoryId, updatedData, (err, result) => {
+        if (err) {
+            console.error("Error updating category:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+        res.status(200).json({ message: "Category updated successfully" });
+    });
+};
+
+// Controller to delete a category
+const deleteCategory = (req, res) => {
+    const categoryId = req.params.id;
+
+    if (!categoryId) {
+        return res.status(400).json({ error: "Category ID is required" });
+    }
+
+    Category.deleteCategory(categoryId, (err, result) => {
+        if (err) {
+            console.error("Error deleting category:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Category not found" });
+        }
+        res.status(200).json({ message: "Category deleted successfully" });
+    });
+};
+
+
+module.exports = { addCategory, getCategories, updateCategory, deleteCategory };
