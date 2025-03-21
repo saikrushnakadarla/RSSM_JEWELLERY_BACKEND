@@ -15,14 +15,14 @@ router.get("/delivery-agents/get", (req, res) => {
 });
 
 router.post("/delivery-agents/add", (req, res) => {
-    const { name, email, mobile, vendorid } = req.body;
+    const { name, email, mobile, vendorid,da_password } = req.body;
     
-    if (!name || !email || !mobile || !vendorid) {
+    if (!name || !email || !mobile || !vendorid || !da_password) {
       return res.status(400).json({ error: "All fields, including vendor ID, are required" });
     }
   
-    const sql = "INSERT INTO delivery_agents (name, email, mobile, vendorid) VALUES (?, ?, ?, ?)";
-    db.query(sql, [name, email, mobile, vendorid], (err, result) => {
+    const sql = "INSERT INTO delivery_agents (name, email, mobile, vendorid,da_password) VALUES (?, ?, ?, ?,?)";
+    db.query(sql, [name, email, mobile, vendorid,da_password], (err, result) => {
       if (err) {
         console.error("Error adding delivery agent:", err);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -41,7 +41,7 @@ router.put("/delivery-agents/update/:id", (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
   
-    const sql = "UPDATE delivery_agents SET name=?, email=?, mobile=?, vendorid=? WHERE id=?";
+    const sql = "UPDATE delivery_agents SET name=?, email=?, mobile=?, vendorid=?  WHERE id=?";
     db.query(sql, [name, email, mobile, vendorid, id], (err) => {
       if (err) {
         console.error("Error updating delivery agent:", err);

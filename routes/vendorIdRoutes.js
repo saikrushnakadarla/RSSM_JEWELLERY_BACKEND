@@ -86,5 +86,31 @@ router.post("/api/vendor/login", (req, res) => {
     });
   });
   
+// ✅ Delivery Agent Login Route
+router.post("/api/delivery-agent/login", (req, res) => {
+  const { email, password } = req.body;
 
+  const sql = "SELECT * FROM delivery_agents WHERE email = ? AND da_password = ?";
+  db.query(sql, [email, password], (err, result) => {
+    if (err) {
+      return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    if (result.length === 0) {
+      return res.status(401).json({ success: false, error: "Invalid email or password!" });
+    }
+
+    const agent = result[0];
+
+    res.json({
+      success: true,
+      agent: {
+        id: agent.id,
+        email: agent.email,
+        name: agent.name,
+        role: "agent",
+      },
+    });
+  });
+});
 module.exports = router;
