@@ -12,4 +12,18 @@ const getAllSubCategories = (callback) => {
   db.query(query, callback);
 };
 
-module.exports = { addSubCategory, getAllSubCategories };
+
+// Update an existing subcategory
+const updateSubCategory = (id, metalType, category, subCategory, prefix, callback) => {
+  const query = "UPDATE subcategories SET metal_type = ?, category = ?, sub_category = ?, prefix = ? WHERE id = ?";
+  db.query(query, [metalType, category, subCategory, prefix, id], callback);
+};
+
+// Delete a subcategory
+const deleteSubCategory = (id, callback) => {
+  const query = "DELETE FROM subcategories WHERE id = ?";
+  db.query(query, [id], callback);
+};
+
+
+module.exports = { addSubCategory, getAllSubCategories, updateSubCategory,  deleteSubCategory };
