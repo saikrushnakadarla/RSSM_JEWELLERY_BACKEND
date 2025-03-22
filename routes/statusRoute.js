@@ -3,19 +3,30 @@ const router = express.Router();
 const db = require("../db");
 
 router.put("/orders/update-status/:id", (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-    const sql = "UPDATE orders SET status = ? WHERE id = ?";
-    
-    db.query(sql, [status, id], (err, result) => {
+  const { id } = req.params;
+  const { status, agent_id, agent_name, agent_email, agent_mobile } = req.body;
+
+  let sql;
+  let values;
+
+  if (status === "Assigned" && agent_id) {
+      sql = "UPDATE orders SET status = ?, agent_id = ?, agent_name = ?, agent_email = ?, agent_mobile = ? WHERE id = ?";
+      values = [status, agent_id, agent_name, agent_email, agent_mobile, id];
+  } else {
+      sql = "UPDATE orders SET status = ? WHERE id = ?";
+      values = [status, id];
+  }
+
+  db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Error updating order status:", err);
-        res.status(500).json({ message: "Database error" });
+          console.error("Error updating order status:", err);
+          res.status(500).json({ message: "Database error" });
       } else {
-        res.json({ message: "Order status updated successfully" });
+          res.json({ message: "Order status updated successfully" });
       }
-    });
   });
+});
+
 
 // API to update product quantity only once per order ID
 router.get("/update-quantity", (req, res) => {
@@ -76,7 +87,29 @@ router.delete("/orders/delete-order/:id", async (req, res) => {
 });
 
 
+// Get assigned orders for the logged-in agent
+router.get("/orders/get-agent-orders", async (req, res) => {
+  try {
+    const { agent_id } = req.query; // Get agent_id from query parameters
 
+    if (!agent_id) {
+      return res.status(400).json({ error: "Agent ID is required" });
+    }
+
+    // Fetch orders where agent_id matches the logged-in user
+    const query = "SELECT * FROM orders WHERE agent_id = ?";
+    db.query(query, [agent_id], (err, results) => {
+      if (err) {
+        console.error("Error fetching agent orders:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json(results);
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
   
   
 
