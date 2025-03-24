@@ -70,7 +70,10 @@ const addVendor = (req, res) => {
     }
     res
       .status(201)
-      .json({ message: "Registered Succesfully. please wait for admin approval", id: result.insertId });
+      .json({
+        message: "Registered Succesfully. please wait for admin approval",
+        id: result.insertId,
+      });
   });
 };
 
@@ -211,4 +214,10 @@ const updateVendor = (req, res) => {
   });
 };
 
-module.exports = { addVendor, getAllVendors, vendorLogin, updateVendorStatus, updateVendor };
+module.exports = {
+  addVendor,
+  getAllVendors,
+  vendorLogin,
+  updateVendorStatus,
+  updateVendor,
+};

@@ -28,7 +28,8 @@ const Vendor = {
   },
 
   getVendorById: (vendorId, callback) => {
-    const query = "SELECT vendor_name, email, password FROM vendors WHERE id = ?";
+    const query =
+      "SELECT vendor_name, email, password FROM vendors WHERE id = ?";
     db.query(query, [vendorId], callback);
   },
 
@@ -49,35 +50,67 @@ const Vendor = {
       gstNumber,
       panCard,
       aadhaarCard,
+      password,
     } = vendorData;
 
-    const query = `
-      UPDATE vendors SET 
-        vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
-        pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
-        bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
-        pan_card = ?, aadhaar_card = ? 
-      WHERE id = ?;
-    `;
+    // Check if the password is provided or not
+    const query = password
+      ? `
+        UPDATE vendors SET 
+          vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
+          pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
+          bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
+          pan_card = ?, aadhaar_card = ?, password = ? 
+        WHERE id = ?;
+      `
+      : `
+        UPDATE vendors SET 
+          vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
+          pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
+          bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
+          pan_card = ?, aadhaar_card = ? 
+        WHERE id = ?;
+      `;
 
-    const values = [
-      vendorName,
-      mobile,
-      email,
-      address,
-      city,
-      pincode,
-      state,
-      stateCode,
-      bankAccountNumber,
-      bankName,
-      ifscCode,
-      branch,
-      gstNumber,
-      panCard,
-      aadhaarCard,
-      vendorId,
-    ];
+    // Adjust the values array based on whether the password is included
+    const values = password
+      ? [
+          vendorName,
+          mobile,
+          email,
+          address,
+          city,
+          pincode,
+          state,
+          stateCode,
+          bankAccountNumber,
+          bankName,
+          ifscCode,
+          branch,
+          gstNumber,
+          panCard,
+          aadhaarCard,
+          password,
+          vendorId,
+        ]
+      : [
+          vendorName,
+          mobile,
+          email,
+          address,
+          city,
+          pincode,
+          state,
+          stateCode,
+          bankAccountNumber,
+          bankName,
+          ifscCode,
+          branch,
+          gstNumber,
+          panCard,
+          aadhaarCard,
+          vendorId,
+        ];
 
     db.query(query, values, callback);
   },
