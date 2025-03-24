@@ -27,6 +27,7 @@ exports.addProduct = (req, res) => {
     product_code,
     vendor_id,
     quantity,
+    vendor_name,
   } = req.body;
 
   const productImage = req.file ? req.file.filename : null;
@@ -60,6 +61,7 @@ exports.addProduct = (req, res) => {
     product_code,
     vendor_id,
     quantity,
+    vendor_name,
   ];
 
   Product.addProduct(values, (err, result) => {

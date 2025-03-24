@@ -26,7 +26,9 @@ const Order = {
       product_code,
       vendor_id,
       order_id,
-      id
+      id,
+      ordered_vendor,
+      vendor_name
     } = orderData;
 
     const query = `
@@ -34,8 +36,8 @@ const Order = {
         category, subcategory, design_name, purity, gross_weight, stone_weight,
         stone_price, rate, total_amount, weight_before_wastage, making_charge,
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
-        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,product_id,order_id,pro_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,product_id,order_id,pro_id,ordered_vendor,vendor_product
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)
     `;
 
     db.query(
@@ -44,7 +46,7 @@ const Order = {
         category, subcategory, design_name, purity, gross_weight, stone_weight,
         stone_price, rate, total_amount, weight_before_wastage, making_charge,
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
-        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,vendor_id,order_id,id
+        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,vendor_id,order_id,id,ordered_vendor,vendor_name
       ],
       callback
     );

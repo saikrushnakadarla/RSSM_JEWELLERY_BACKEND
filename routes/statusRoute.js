@@ -4,14 +4,27 @@ const db = require("../db");
 
 router.put("/orders/update-status/:id", (req, res) => {
   const { id } = req.params;
-  const { status, agent_id, agent_name, agent_email, agent_mobile } = req.body;
+  const { 
+    status, 
+    agent_id, 
+    agent_name, 
+    agent_email, 
+    agent_mobile, 
+    start_date_time,  // New field
+    delivery_date_time // New field
+  } = req.body;
 
   let sql;
   let values;
 
   if (status === "Assigned" && agent_id) {
-      sql = "UPDATE orders SET status = ?, agent_id = ?, agent_name = ?, agent_email = ?, agent_mobile = ? WHERE id = ?";
-      values = [status, agent_id, agent_name, agent_email, agent_mobile, id];
+      sql = `
+        UPDATE orders 
+        SET status = ?, agent_id = ?, agent_name = ?, agent_email = ?, 
+            agent_mobile = ?, start_date_time = ?, delivery_date_time = ? 
+        WHERE id = ?
+      `;
+      values = [status, agent_id, agent_name, agent_email, agent_mobile, start_date_time, delivery_date_time, id];
   } else {
       sql = "UPDATE orders SET status = ? WHERE id = ?";
       values = [status, id];
@@ -26,6 +39,7 @@ router.put("/orders/update-status/:id", (req, res) => {
       }
   });
 });
+
 
 
 // API to update product quantity only once per order ID
