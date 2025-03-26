@@ -13,7 +13,7 @@ const RateModel = {
     } = rateData;
 
     const query = `
-      INSERT INTO Rates (rate_date, rate_time, rate_16crt, rate_18crt, rate_22crt, rate_24crt, silver_rate)
+      INSERT INTO rates (rate_date, rate_time, rate_16crt, rate_18crt, rate_22crt, rate_24crt, silver_rate)
       VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
 
