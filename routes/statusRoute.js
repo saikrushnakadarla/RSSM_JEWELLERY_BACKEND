@@ -124,7 +124,32 @@ router.get("/orders/get-agent-orders", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-  
+
+// Update delivery agent's live location
+router.post("/orders/update-location", async (req, res) => {
+  const { agent_id, latitude, longitude } = req.body;
+
+  if (!agent_id || !latitude || !longitude) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const sql = `
+      UPDATE orders 
+      SET latitude = ?, longitude = ?
+      WHERE agent_id = ? AND status = 'Assigned'
+    `;
+
+    await db.promise().query(sql, [latitude, longitude, agent_id]);
+
+    res.status(200).json({ message: "Location updated successfully" });
+  } catch (error) {
+    console.error("Error updating location:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
   
 
 module.exports = router; 
