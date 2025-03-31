@@ -26,14 +26,15 @@ exports.addProduct = (req, res) => {
     total_price,
     product_code,
     vendor_id,
-    quantity,
+    // quantity,
     vendor_name,
+    size,
   } = req.body;
 
   const productImage = req.file ? req.file.filename : null;
 
   // 🔹 Validate required fields
-  if (!category || !subcategory || !designName || !purity || !grossWeight || !rate || !total_amount) {
+  if (!category || !subcategory || !purity || !rate ) {
     return res.status(400).json({ error: "All required fields must be filled!" });
   }
 
@@ -60,8 +61,9 @@ exports.addProduct = (req, res) => {
     total_price || 0,
     product_code,
     vendor_id,
-    quantity,
+    // quantity,
     vendor_name,
+    size,
   ];
 
   Product.addProduct(values, (err, result) => {

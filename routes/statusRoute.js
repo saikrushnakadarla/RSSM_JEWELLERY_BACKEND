@@ -124,6 +124,89 @@ router.get("/orders/get-agent-orders", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.post("/orders/update-location", async (req, res) => {
+  const { order_id, latitude, longitude } = req.body;
+
+  if (!order_id || !latitude || !longitude) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Check if the order status is "Received"
+    const [rows] = await db.promise().query("SELECT status FROM orders WHERE id = ?", [order_id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (rows[0].status === "Received") {
+      return res.status(400).json({ message: "Tracking stopped. Order already received." });
+    }
+
+    // Update location if status is not "Received"
+    const sql = `
+      UPDATE orders 
+      SET latitude = ?, longitude = ?
+      WHERE id = ? AND status != 'Received'
+    `;
+
+    await db.promise().query(sql, [latitude, longitude, order_id]);
+
+    res.status(200).json({ message: "Location updated successfully" });
+  } catch (error) {
+    console.error("Error updating location:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/orders/get-recieved-status", async (req, res) => {
+  const { order_id } = req.query;
+
+  if (!order_id) {
+    return res.status(400).json({ message: "Order ID is required" });
+  }
+
+  try {
+    const [rows] = await db.promise().query("SELECT status FROM orders WHERE id = ?", [order_id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ status: rows[0].status });
+  } catch (error) {
+    console.error("Error fetching order status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+// API to fetch live location of a delivery agent for a specific order
+router.get("/orders/get-order-location", async (req, res) => {
+  try {
+    const { order_id } = req.query;
+    if (!order_id) {
+      return res.status(400).json({ error: "Order ID is required" });
+    }
+
+    // Use db.promise().query() to ensure a Promise-based query
+    const [rows] =  await db.promise().query(
+      "SELECT latitude, longitude FROM orders WHERE id = ?",
+      [order_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Error fetching order location:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
   
   
 
