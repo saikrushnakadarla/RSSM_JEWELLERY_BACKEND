@@ -21,6 +21,7 @@ const addVendor = (req, res) => {
     panCard,
     aadhaarCard,
     password,
+    vendorCode,
   } = req.body;
 
   if (
@@ -39,7 +40,8 @@ const addVendor = (req, res) => {
     !gstNumber ||
     !panCard ||
     !aadhaarCard ||
-    !password
+    !password||
+    !vendorCode
   ) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -61,6 +63,7 @@ const addVendor = (req, res) => {
     panCard,
     aadhaarCard,
     password,
+    vendorCode
   ];
 
   Vendor.addVendor(values, (err, result) => {

@@ -33,9 +33,13 @@ router.get("/get-product/:id", (req, res) => {
     });
 });
 
-router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
-    const productId = req.params.id;
-    const {
+router.put(
+    "/update-product/:id",
+    upload.fields([{ name: "productImage", maxCount: 5 }, { name: "videoFile", maxCount: 1 }]),
+    (req, res) => {
+      const productId = req.params.id;
+  
+      const {
         category,
         subcategory,
         designName,
@@ -46,100 +50,122 @@ router.put("/update-product/:id", upload.single("productImage"), (req, res) => {
         rate,
         total_amount,
         weightBeforeWastage,
-        makingCharge,
+        making_charge,
         makingChargePercentage,
         total_mc,
         wastageOn,
         wastagePercentage,
         wastageWeight,
         totalWeight,
-        total_price,
         huidNumber,
+        total_price,
         product_code,
         vendor_id,
-        quantity
-    } = req.body;
-
-    // Check if a new file is uploaded
-    const newImage = req.file ? req.file.filename : null;
-
-    // Fetch existing image only if no new image is uploaded
-    const getImageQuery = "SELECT product_image FROM products WHERE id = ?";
-    db.query(getImageQuery, [productId], (err, results) => {
+        vendor_name,
+        size,
+      } = req.body;
+  
+      // Handle image uploads
+      const productImages = req.files["productImage"]
+        ? req.files["productImage"].map((file) => file.filename).join(",")
+        : null;
+  
+      // Handle video upload
+      const videoFile = req.files["videoFile"] ? req.files["videoFile"][0].filename : null;
+  
+      // Validate required fields
+      if (!category || !subcategory || !purity || !rate) {
+        return res.status(400).json({ error: "All required fields must be filled!" });
+      }
+  
+      // Fetch existing product data
+      const getProductQuery = "SELECT * FROM products WHERE id = ?";
+      db.query(getProductQuery, [productId], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: "Database error", details: err });
+          return res.status(500).json({ error: "Database error", details: err });
         }
-
+  
         if (results.length === 0) {
-            return res.status(404).json({ message: "Product not found" });
+          return res.status(404).json({ message: "Product not found" });
         }
-
-        const existingImage = results[0].product_image;
-        const finalImage = newImage || existingImage; // Keep old image if no new one is uploaded
-
-        // Update product details
+  
+        const existingProduct = results[0];
+        const existingImages = existingProduct.product_image ? existingProduct.product_image.split(",") : [];
+        const existingVideo = existingProduct.video_file || null;
+  
+        // Combine new and existing images
+        const finalImages = productImages ? [...req.files["productImage"].map(file => file.filename), ...existingImages].join(",") : existingImages.join(",");
+        const finalVideo = videoFile || existingVideo;
+  
+        // Update product in the database
         const updateQuery = `
-            UPDATE products SET 
-                category = ?, 
-                subcategory = ?, 
-                design_name = ?, 
-                purity = ?, 
-                gross_weight = ?, 
-                stone_weight = ?, 
-                stone_price = ?, 
-                rate = ?, 
-                total_amount = ?, 
-                weight_before_wastage = ?, 
-                making_charge = ?, 
-                making_charge_percentage = ?, 
-                total_mc = ?, 
-                wastage_on = ?, 
-                wastage_percentage = ?, 
-                wastage_weight = ?, 
-                total_weight = ?, 
-                total_price = ?, 
-                huid_number = ?, 
-                product_code = ?, 
-                product_image = ?, 
-                vendor_id = ?,
-                quantity=?
-            WHERE id = ?`;
-
+          UPDATE products SET
+            category = ?,
+            subcategory = ?,
+            design_name = ?,
+            purity = ?,
+            gross_weight = ?,
+            stone_weight = ?,
+            stone_price = ?,
+            rate = ?,
+            total_amount = ?,
+            weight_before_wastage = ?,
+            making_charge = ?,
+            making_charge_percentage = ?,
+            total_mc = ?,
+            wastage_on = ?,
+            wastage_percentage = ?,
+            wastage_weight = ?,
+            total_weight = ?,
+            huid_number = ?,
+            product_image = ?,
+            total_price = ?,
+            product_code = ?,
+            vendor_id = ?,
+            vendor_name = ?,
+            size = ?,
+            video_file = ?
+          WHERE id = ?`;
+  
         const values = [
-            category,
-            subcategory,
-            designName,
-            purity,
-            grossWeight,
-            stoneWeight,
-            stonePrice,
-            rate,
-            total_amount,
-            weightBeforeWastage,
-            makingCharge,
-            makingChargePercentage,
-            total_mc,
-            wastageOn,
-            wastagePercentage,
-            wastageWeight,
-            totalWeight,
-            total_price,
-            huidNumber,
-            product_code,
-            finalImage, // Use new image if uploaded, else keep existing image
-            vendor_id,
-            quantity,
-            productId,
+          category,
+          subcategory,
+          designName,
+          purity,
+          grossWeight,
+          stoneWeight || 0,
+          stonePrice || 0,
+          rate,
+          total_amount,
+          weightBeforeWastage || 0,
+          making_charge || 0,
+          makingChargePercentage || 0,
+          total_mc || 0,
+          wastageOn || "",
+          wastagePercentage || 0,
+          wastageWeight || 0,
+          totalWeight || 0,
+          huidNumber || "",
+          finalImages,
+          total_price || 0,
+          product_code,
+          vendor_id,
+          vendor_name,
+          size,
+          finalVideo,
+          productId
         ];
-
-        db.query(updateQuery, values, (updateErr, results) => {
-            if (updateErr) {
-                return res.status(500).json({ error: "Database error", details: updateErr });
-            }
-            res.json({ message: "Product updated successfully", product_image: finalImage });
+  
+        db.query(updateQuery, values, (updateErr, updateResults) => {
+          if (updateErr) {
+            return res.status(500).json({ error: "Database error", details: updateErr });
+          }
+          res.json({ message: "✅ Product updated successfully!", product_image: finalImages, video_file: finalVideo });
         });
-    });
-});
+      });
+    }
+  );
+  
 
 
 

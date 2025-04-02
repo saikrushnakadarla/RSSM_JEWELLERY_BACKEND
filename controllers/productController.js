@@ -31,7 +31,8 @@ exports.addProduct = (req, res) => {
     size,
   } = req.body;
 
-  const productImage = req.file ? req.file.filename : null;
+  const productImage = req.files['productImage'] ? req.files['productImage'][0].filename : null;
+  const videoFile = req.files['videoFile'] ? req.files['videoFile'][0].filename : null;
 
   // 🔹 Validate required fields
   if (!category || !subcategory || !purity || !rate ) {
@@ -58,12 +59,14 @@ exports.addProduct = (req, res) => {
     totalWeight || 0,
     huidNumber || "",
     productImage,
+    
     total_price || 0,
     product_code,
     vendor_id,
     // quantity,
     vendor_name,
     size,
+    videoFile,
   ];
 
   Product.addProduct(values, (err, result) => {

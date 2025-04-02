@@ -113,4 +113,14 @@ router.post("/api/delivery-agent/login", (req, res) => {
     });
   });
 });
+router.get("/vendors/check-code/:code", async (req, res) => {
+  const { code } = req.params;
+  try {
+    const [rows] = await db.execute("SELECT COUNT(*) as count FROM vendors WHERE vendor_code = ?", [code]);
+    res.json({ exists: rows[0].count > 0 });
+  } catch (error) {
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 module.exports = router;
