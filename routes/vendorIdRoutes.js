@@ -113,6 +113,7 @@ router.post("/api/delivery-agent/login", (req, res) => {
     });
   });
 });
+//get all vendor_codes
 router.get("/vendors/check-code/:code", async (req, res) => {
   const { code } = req.params;
   try {
