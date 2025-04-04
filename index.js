@@ -12,7 +12,12 @@ const vendorIdRoute = require("./routes/vendorIdRoutes");
 const editProductRoute = require("./routes/editProductRoute");
 const statusRoute = require("./routes/statusRoute");
 const agentRoutes = require("./routes/agentRoutes");
+
 const addProductRoute = require("./routes/addProductRoute");
+
+const addproducttRoutes = require("./routes/addProductRoute");
+const salesRoutes = require("./routes/SaleRoutes");
+
 
 const app = express();
 const PORT = 5000;
@@ -38,8 +43,11 @@ app.use("/", statusRoute);
 app.use("/", agentRoutes);
 app.use("/api",addProductRoute)
 
-// app.use("/api/vendors", vendorRoutes);
 
+app.use("/api", addproducttRoutes);
+
+// app.use("/api/vendors", vendorRoutes);
+app.use("/api", salesRoutes);
 
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));

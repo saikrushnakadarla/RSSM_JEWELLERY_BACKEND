@@ -113,7 +113,9 @@ router.post("/api/delivery-agent/login", (req, res) => {
     });
   });
 });
+
 //get all vendor_codes
+
 router.get("/vendors/check-code/:code", async (req, res) => {
   const { code } = req.params;
   try {
@@ -123,5 +125,6 @@ router.get("/vendors/check-code/:code", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
 
 module.exports = router;
