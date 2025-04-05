@@ -50,3 +50,59 @@ exports.getAllSales = (req, res) => {
       res.status(200).json(results);
     });
   };
+
+  // Get Single Sale by ID
+exports.getSaleById = (req, res) => {
+  const { id } = req.params;
+
+  Sales.getById(id, (err, result) => {
+    if (err) {
+      console.error("Error fetching sale:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (!result) return res.status(404).json({ error: "Sale not found" });
+
+    res.status(200).json(result);
+  });
+};
+
+// Update Sale by ID
+exports.updateSale = (req, res) => {
+  const { id } = req.params;
+  const saleData = { ...req.body };
+
+  // Convert ISO string to 'YYYY-MM-DD' if date exists
+  if (saleData.date) {
+    saleData.date = new Date(saleData.date).toISOString().split('T')[0]; // 👈 Format to 'YYYY-MM-DD'
+  }
+
+  Sales.updateById(id, saleData, (err, result) => {
+    if (err) {
+      console.error("Error updating sale:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Sale not found" });
+    }
+
+    res.status(200).json({ message: "Sale updated successfully" });
+  });
+};
+
+
+// Delete Sale by ID
+exports.deleteSale = (req, res) => {
+  const { id } = req.params;
+
+  Sales.deleteById(id, (err, result) => {
+    if (err) {
+      console.error("Error deleting sale:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Sale not found" });
+    }
+
+    res.status(200).json({ message: "Sale deleted successfully" });
+  });
+};
