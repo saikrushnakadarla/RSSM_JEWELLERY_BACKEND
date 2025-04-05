@@ -17,7 +17,7 @@ const addProductRoute = require("./routes/addProductRoute");
 
 const addproducttRoutes = require("./routes/addProductRoute");
 const salesRoutes = require("./routes/SaleRoutes");
-
+const invoiceRoutes = require("./routes/invoiceRoute");
 
 const app = express();
 const PORT = 5000;
@@ -41,13 +41,14 @@ app.use("/", vendorIdRoute);
 app.use("/", editProductRoute);
 app.use("/", statusRoute);
 app.use("/", agentRoutes);
-app.use("/api",addProductRoute)
-
+app.use("/api", addProductRoute);
 
 app.use("/api", addproducttRoutes);
 
 // app.use("/api/vendors", vendorRoutes);
 app.use("/api", salesRoutes);
+
+app.use("/api/invoices", invoiceRoutes);
 
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));
