@@ -4,39 +4,62 @@ const db = require("../db");
 
 router.put("/orders/update-status/:id", (req, res) => {
   const { id } = req.params;
-  const { 
-    status, 
-    agent_id, 
-    agent_name, 
-    agent_email, 
-    agent_mobile, 
-    start_date_time,  // New field
-    delivery_date_time // New field
+  const {
+    status,
+    agent_id,
+    agent_name,
+    agent_email,
+    agent_mobile,
+    start_date_time,
+    delivery_date_time,
+    pickup_lat,
+    pickup_long,
+    pickup_address
   } = req.body;
 
   let sql;
   let values;
 
   if (status === "Assigned" && agent_id) {
-      sql = `
-        UPDATE orders 
-        SET status = ?, agent_id = ?, agent_name = ?, agent_email = ?, 
-            agent_mobile = ?, start_date_time = ?, delivery_date_time = ? 
-        WHERE id = ?
-      `;
-      values = [status, agent_id, agent_name, agent_email, agent_mobile, start_date_time, delivery_date_time, id];
+    sql = `
+      UPDATE orders 
+      SET status = ?, 
+          agent_id = ?, 
+          agent_name = ?, 
+          agent_email = ?, 
+          agent_mobile = ?, 
+          start_date_time = ?, 
+          delivery_date_time = ?, 
+          pickup_lat = ?, 
+          pickup_long = ?, 
+          pickup_address = ?
+      WHERE id = ?
+    `;
+    values = [
+      status,
+      agent_id,
+      agent_name,
+      agent_email,
+      agent_mobile,
+      start_date_time,
+      delivery_date_time,
+      pickup_lat,
+      pickup_long,
+      pickup_address,
+      id
+    ];
   } else {
-      sql = "UPDATE orders SET status = ? WHERE id = ?";
-      values = [status, id];
+    sql = "UPDATE orders SET status = ? WHERE id = ?";
+    values = [status, id];
   }
 
   db.query(sql, values, (err, result) => {
-      if (err) {
-          console.error("Error updating order status:", err);
-          res.status(500).json({ message: "Database error" });
-      } else {
-          res.json({ message: "Order status updated successfully" });
-      }
+    if (err) {
+      console.error("Error updating order status:", err);
+      res.status(500).json({ message: "Database error" });
+    } else {
+      res.json({ message: "Order status updated successfully" });
+    }
   });
 });
 
