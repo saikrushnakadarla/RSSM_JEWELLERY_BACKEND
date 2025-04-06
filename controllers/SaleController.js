@@ -14,7 +14,8 @@ exports.createSale = (req, res) => {
   products.forEach((product, index) => {
     const saleData = {
       ...vendor_info,
-      ...product
+      ...product,
+      vendor_id: vendor_info.vendor_id,
     };
 
     Sales.create(saleData, (err, result) => {
@@ -29,29 +30,30 @@ exports.createSale = (req, res) => {
         if (insertErrors.length > 0) {
           return res.status(500).json({
             message: "Some sales failed to insert",
-            errors: insertErrors
+            errors: insertErrors,
           });
         } else {
-          return res.status(201).json({ message: "All sales recorded successfully" });
+          return res
+            .status(201)
+            .json({ message: "All sales recorded successfully" });
         }
       }
     });
   });
 };
 
-
 // Fetch all sales
 exports.getAllSales = (req, res) => {
-    Sales.getAll((err, results) => {
-      if (err) {
-        console.error("Error fetching sales data:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
-      res.status(200).json(results);
-    });
-  };
+  Sales.getAll((err, results) => {
+    if (err) {
+      console.error("Error fetching sales data:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.status(200).json(results);
+  });
+};
 
-  // Get Single Sale by ID
+// Get Single Sale by ID
 exports.getSaleById = (req, res) => {
   const { id } = req.params;
 
@@ -73,7 +75,7 @@ exports.updateSale = (req, res) => {
 
   // Convert ISO string to 'YYYY-MM-DD' if date exists
   if (saleData.date) {
-    saleData.date = new Date(saleData.date).toISOString().split('T')[0]; // 👈 Format to 'YYYY-MM-DD'
+    saleData.date = new Date(saleData.date).toISOString().split("T")[0]; // 👈 Format to 'YYYY-MM-DD'
   }
 
   Sales.updateById(id, saleData, (err, result) => {
@@ -88,7 +90,6 @@ exports.updateSale = (req, res) => {
     res.status(200).json({ message: "Sale updated successfully" });
   });
 };
-
 
 // Delete Sale by ID
 exports.deleteSale = (req, res) => {

@@ -31,9 +31,10 @@ const Order = {
       vendor_name,
       delivery_lat,
       delivery_long,
-      delivery_address
+      delivery_address,
+      size,
     } = orderData;
-  
+
     const query = `
       INSERT INTO orders (
         category, subcategory, design_name, purity, gross_weight, stone_weight,
@@ -41,24 +42,47 @@ const Order = {
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
         wastage_weight, total_weight, huid_number, product_image, total_price, product_code,
         product_id, order_id, pro_id, ordered_vendor, vendor_product,
-        delivery_lat, delivery_long, delivery_address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        delivery_lat, delivery_long, delivery_address, size
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `;
-  
+
     db.query(
       query,
       [
-        category, subcategory, design_name, purity, gross_weight, stone_weight,
-        stone_price, rate, total_amount, weight_before_wastage, making_charge,
-        making_charge_percentage, total_mc, wastage_on, wastage_percentage,
-        wastage_weight, total_weight, huid_number, product_image, total_price, product_code,
-        vendor_id, order_id, id, ordered_vendor, vendor_name,
-        delivery_lat, delivery_long, delivery_address
+        category,
+        subcategory,
+        design_name,
+        purity,
+        gross_weight,
+        stone_weight,
+        stone_price,
+        rate,
+        total_amount,
+        weight_before_wastage,
+        making_charge,
+        making_charge_percentage,
+        total_mc,
+        wastage_on,
+        wastage_percentage,
+        wastage_weight,
+        total_weight,
+        huid_number,
+        product_image,
+        total_price,
+        product_code,
+        vendor_id,
+        order_id,
+        id,
+        ordered_vendor,
+        vendor_name,
+        delivery_lat,
+        delivery_long,
+        delivery_address,
+        size,
       ],
       callback
     );
   },
-  
 
   getAllOrders: (callback) => {
     const sql = "SELECT * FROM orders";
