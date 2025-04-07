@@ -6,12 +6,6 @@ router.put("/orders/update-status/:id", (req, res) => {
   const { id } = req.params;
   const {
     status,
-    agent_id,
-    agent_name,
-    agent_email,
-    agent_mobile,
-    start_date_time,
-    delivery_date_time,
     pickup_lat,
     pickup_long,
     pickup_address
@@ -20,16 +14,10 @@ router.put("/orders/update-status/:id", (req, res) => {
   let sql;
   let values;
 
-  if (status === "Assigned" && agent_id) {
+  if (status === "Accepted") {
     sql = `
       UPDATE orders 
       SET status = ?, 
-          agent_id = ?, 
-          agent_name = ?, 
-          agent_email = ?, 
-          agent_mobile = ?, 
-          start_date_time = ?, 
-          delivery_date_time = ?, 
           pickup_lat = ?, 
           pickup_long = ?, 
           pickup_address = ?
@@ -37,12 +25,6 @@ router.put("/orders/update-status/:id", (req, res) => {
     `;
     values = [
       status,
-      agent_id,
-      agent_name,
-      agent_email,
-      agent_mobile,
-      start_date_time,
-      delivery_date_time,
       pickup_lat,
       pickup_long,
       pickup_address,
@@ -230,6 +212,46 @@ router.get("/orders/get-order-location", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// POST /orders/assign-agent
+router.post("/orders/assign-agent", async (req, res) => {
+  const {
+    order_id,
+    status,
+    agent_id,
+    agent_name,
+    agent_email,
+    agent_mobile,
+    start_time,
+    delivery_time,
+  } = req.body;
+
+  try {
+    await db.promise().query(
+      `UPDATE orders 
+       SET status=?, agent_id=?, agent_name=?, agent_email=?, agent_mobile=?, 
+           start_date_time=?, delivery_date_time=? 
+       WHERE id=?`,
+      [
+        status,
+        agent_id,
+        agent_name,
+        agent_email,
+        agent_mobile,
+        start_time,
+        delivery_time,
+        order_id,
+      ]
+    );
+
+    res.status(200).json({ message: "Order updated with agent details" });
+  } catch (err) {
+    console.error("Assignment error:", err);
+    res.status(500).json({ message: "Failed to assign agent" });
+  }
+});
+
+
   
   
 
