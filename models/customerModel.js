@@ -16,6 +16,10 @@ const Customer = {
       callback
     );
   },
+
+  getByMobile: (mobile, callback) => {
+    db.query("SELECT * FROM customers WHERE mobile = ?", mobile, callback);
+  },
 };
 
 module.exports = Customer;

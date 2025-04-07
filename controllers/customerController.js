@@ -26,24 +26,31 @@ exports.createCustomer = (req, res) => {
 };
 
 exports.getCustomerByName = (req, res) => {
-  const { trade_name } = req.query;
+  const { trade_name, mobile } = req.query;
 
-  if (!trade_name) {
+  if (!trade_name && !mobile) {
     return res
       .status(400)
-      .json({ error: "trade_name are required" });
+      .json({ error: "Either trade_name or mobile is required" });
   }
 
-  Customer.getByName(trade_name, (err, results) => {
+  const callback = (err, results) => {
     if (err) {
       console.error("Error fetching customer:", err);
       return res.status(500).json({ error: "Failed to retrieve customer" });
     }
 
-    if (results.length === 0) {
+    if (!results || results.length === 0) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    res.json(results[0]);
-  });
+    res.json(results[0]); // return the first matching result
+  };
+
+  if (trade_name) {
+    Customer.getByName(trade_name, callback);
+  } else {
+    Customer.getByMobile(mobile, callback);
+  }
 };
+
