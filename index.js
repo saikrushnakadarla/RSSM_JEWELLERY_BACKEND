@@ -14,7 +14,7 @@ const statusRoute = require("./routes/statusRoute");
 const agentRoutes = require("./routes/agentRoutes");
 
 const addProductRoute = require("./routes/addProductRoute");
-
+const oldItemsRoutes = require('./routes/OlditemsRoutes');
 const addproducttRoutes = require("./routes/addProductRoute");
 const salesRoutes = require("./routes/SaleRoutes");
 const invoiceRoutes = require("./routes/invoiceRoute");
@@ -51,11 +51,11 @@ app.use("/api/customers", customerRoutes);
 app.use("/api", salesRoutes);
 
 app.use("/api/invoices", invoiceRoutes);
+app.use('/', oldItemsRoutes);
 
 
-
-// ✅ Optional debug to confirm
-console.log("✅ Customer route mounted at /api/customers");
+// // ✅ Optional debug to confirm
+// console.log("✅ Customer route mounted at /api/customers");
 
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));
