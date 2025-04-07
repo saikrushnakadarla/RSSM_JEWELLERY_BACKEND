@@ -191,7 +191,7 @@ router.get("/orders/get-recieved-status", async (req, res) => {
   }
 
   try {
-    const [rows] = await db.promise().query("SELECT status FROM orders WHERE id = ?", [order_id]);
+    const [rows] = await db.promise().query("SELECT * FROM orders WHERE id = ?", [order_id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "Order not found" });
@@ -216,7 +216,7 @@ router.get("/orders/get-order-location", async (req, res) => {
 
     // Use db.promise().query() to ensure a Promise-based query
     const [rows] =  await db.promise().query(
-      "SELECT latitude, longitude FROM orders WHERE id = ?",
+      "SELECT * FROM orders WHERE id = ?",
       [order_id]
     );
 
