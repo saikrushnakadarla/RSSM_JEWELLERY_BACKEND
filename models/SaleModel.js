@@ -6,8 +6,11 @@ const Sales = {
       INSERT INTO sales (
         mobile, vendor_name, email, address, city, pincode, state, state_code, 
         aadhaar_card, gst_number, pan_card, date, invoiceNumber, 
-        productCode, category, subcategory, purity, grossWeight, netWeight, huid, size, vendor_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        productCode, category, subcategory, purity, grossWeight, netWeight,
+        mc_type, mc_per_gram, total_mc, rate, total_amount,
+        huid, size, vendor_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
     const values = [
       data.mobile,
@@ -29,6 +32,11 @@ const Sales = {
       data.purity,
       data.grossWeight,
       data.netWeight,
+      data.mc_type,
+      data.mc_per_gram,
+      data.total_mc,
+      data.rate,
+      data.total_amount,
       data.huid,
       data.size,
       data.vendor_id,
@@ -61,7 +69,9 @@ const Sales = {
       UPDATE sales SET 
         mobile = ?, vendor_name = ?, email = ?, address = ?, city = ?, pincode = ?, state = ?, state_code = ?, 
         aadhaar_card = ?, gst_number = ?, pan_card = ?, date = ?, invoiceNumber = ?, 
-        productCode = ?, category = ?, subcategory = ?, purity = ?, grossWeight = ?, netWeight = ?, huid = ?, size = ?
+        productCode = ?, category = ?, subcategory = ?, purity = ?, grossWeight = ?, netWeight = ?,
+        mc_type = ?, mc_per_gram = ?, total_mc = ?, rate = ?, total_amount = ?,
+        huid = ?, size = ?
       WHERE id = ?
     `;
 
@@ -85,6 +95,11 @@ const Sales = {
       data.purity,
       data.grossWeight,
       data.netWeight,
+      data.mc_type,
+      data.mc_per_gram,
+      data.total_mc,
+      data.rate,
+      data.total_amount,
       data.huid,
       data.size,
       id,
