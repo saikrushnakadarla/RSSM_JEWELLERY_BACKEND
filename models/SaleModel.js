@@ -8,10 +8,12 @@ const Sales = {
         aadhaar_card, gst_number, pan_card, date, invoiceNumber, 
         productCode, category, subcategory, purity, grossWeight, netWeight,
         mc_type, mc_per_gram, total_mc, rate, amount, total_amount,
-        huid, size, vendor_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        huid, size, vendor_id, old_gold_amount, net_payable_amount,
+        cash_amount, card_amount, cheque_amount, online_amount
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
     `;
 
+    // Update values array to include all fields:
     const values = [
       data.mobile,
       data.vendor_name,
@@ -36,11 +38,17 @@ const Sales = {
       data.mc_per_gram,
       data.total_mc,
       data.rate,
-      data.amount,
+      data.amount || 0, // Ensure amount has a value
       data.total_amount,
       data.huid,
       data.size,
       data.vendor_id,
+      data.old_gold_amount || 0,
+      data.net_payable_amount || 0,
+      data.cash_amount || 0,
+      data.card_amount || 0,
+      data.cheque_amount || 0,
+      data.online_amount || 0,
     ];
 
     db.query(sql, values, (err, result) => {

@@ -52,7 +52,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/api", salesRoutes);
 
 app.use("/api/invoices", invoiceRoutes);
-app.use("/", OlditemsRoutes);
+app.use("/api", OlditemsRoutes);
 // Serve Static Images
 app.use("/uploads/images", express.static("uploads/images"));
 
