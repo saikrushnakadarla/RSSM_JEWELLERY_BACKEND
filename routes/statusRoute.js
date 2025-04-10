@@ -251,8 +251,53 @@ router.post("/orders/assign-agent", async (req, res) => {
   }
 });
 
+router.put("/orders/update-invoice/:id", (req, res) => {
+    const orderId = req.params.id;
+    const { invoice_number } = req.body;
 
-  
-  
+    const query = "UPDATE orders SET invoice = ? WHERE id = ?";
+
+    db.query(query, [invoice_number, orderId], (err, result) => {
+        if (err) {
+            console.error("Error updating invoice number:", err);
+            return res.status(500).json({ error: "Failed to update invoice number" });
+        }
+
+        res.status(200).json({ message: "Invoice number updated successfully" });
+    });
+});
+
+
+
+
+
+// GET /orders/latest-invoice/:productId
+router.get("/orders/latest-invoice/:vendorId", async (req, res) => {
+    const vendorId = req.params.vendorId;
+
+    try {
+        const [result] = await db.promise().query(`
+            SELECT invoice FROM orders 
+            WHERE product_id = ? AND invoice IS NOT NULL
+            ORDER BY CAST(SUBSTRING(invoice, 4) AS UNSIGNED) DESC
+            LIMIT 1
+        `, [vendorId]);
+
+        if (result.length > 0) {
+            res.json({ latestInvoiceNumber: result[0].invoice });
+        } else {
+            res.json({ latestInvoiceNumber: null });
+        }
+    } catch (err) {
+        console.error("Error fetching latest invoice:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
+
+
+
+
 
 module.exports = router; 
