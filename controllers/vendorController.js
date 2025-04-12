@@ -6,9 +6,11 @@ const nodemailer = require("nodemailer");
 const addVendor = (req, res) => {
   const {
     vendorName,
+    businessName,
     mobile,
     email,
-    address,
+    address1,
+    address2,
     city,
     pincode,
     state,
@@ -26,9 +28,11 @@ const addVendor = (req, res) => {
 
   if (
     !vendorName ||
+    !businessName ||
     !mobile ||
     !email ||
-    !address ||
+    !address1 ||
+    !address2 ||
     !city ||
     !pincode ||
     !state ||
@@ -40,7 +44,7 @@ const addVendor = (req, res) => {
     !gstNumber ||
     !panCard ||
     !aadhaarCard ||
-    !password||
+    !password ||
     !vendorCode
   ) {
     return res.status(400).json({ error: "All fields are required" });
@@ -48,9 +52,11 @@ const addVendor = (req, res) => {
 
   const values = [
     vendorName,
+    businessName,
     mobile,
     email,
-    address,
+    address1,
+    address2,
     city,
     pincode,
     state,
@@ -63,7 +69,7 @@ const addVendor = (req, res) => {
     panCard,
     aadhaarCard,
     password,
-    vendorCode
+    vendorCode,
   ];
 
   Vendor.addVendor(values, (err, result) => {
@@ -71,12 +77,10 @@ const addVendor = (req, res) => {
       console.error("Error inserting vendor:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    res
-      .status(201)
-      .json({
-        message: "Registered Succesfully. please wait for admin approval",
-        id: result.insertId,
-      });
+    res.status(201).json({
+      message: "Registered Successfully. Please wait for admin approval.",
+      id: result.insertId,
+    });
   });
 };
 
