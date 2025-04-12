@@ -1,6 +1,8 @@
 const Sales = require("../models/SaleModel");
 const oldItemsModel = require("../models/OldItemsModel");
 
+const db = require("../db");
+
 exports.createSale = (req, res) => {
   const { vendor_info, products, oldItems } = req.body;
   let insertErrors = [];
@@ -51,6 +53,17 @@ exports.createSale = (req, res) => {
         insertErrors.push(err);
       }
 
+      // ✅ Update sale_status in orders table to 'sold' for matching product_code
+      const updateQuery = `UPDATE orders SET sale_status = 'sold' WHERE product_code = ?`;
+      db.query(updateQuery, [product.productCode], (updateErr) => {
+        if (updateErr) {
+          console.error(
+            `Failed to update sale_status for product_code ${product.productCode}`,
+            updateErr
+          );
+        }
+      });
+
       // When all products have been processed...
       if (productInsertCount === products.length) {
         if (insertErrors.length > 0) {
@@ -96,7 +109,6 @@ exports.createSale = (req, res) => {
     });
   });
 };
-
 
 // Fetch all sales
 exports.getAllSales = (req, res) => {
