@@ -64,7 +64,11 @@ router.put(
         vendor_name,
         size,
         vendor_address,
-      vendor_business_name
+      vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state
       } = req.body;
   
       // Handle image uploads
@@ -128,7 +132,11 @@ router.put(
             size = ?,
             video_file = ?,
             vendor_address=?,
-      vendor_business_name=?
+      vendor_business_name=?,
+      vendor_mobile=?,
+      vendor_city=?,
+      vendor_pincode=?,
+      vendor_state=?
           WHERE id = ?`;
   
         const values = [
@@ -159,6 +167,10 @@ router.put(
           finalVideo,
           vendor_address,
       vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state,
           productId,
           
         ];
