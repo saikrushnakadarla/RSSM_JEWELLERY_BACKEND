@@ -76,7 +76,11 @@ router.post(
       vendor_name,
       size,
       vendor_address,
-      vendor_business_name
+      vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state
     } = req.body;
 
     const productImages = req.files["productImage"]
@@ -96,8 +100,11 @@ router.post(
         stone_weight, stone_price, rate, total_amount, weight_before_wastage, 
         making_charge, making_charge_percentage, total_mc, wastage_on, 
         wastage_percentage, wastage_weight, total_weight, huid_number, product_image, 
-        total_price, product_code, vendor_id, vendor_name, size, video_file,vendor_address,vendor_business_name  
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)`;
+        total_price, product_code, vendor_id, vendor_name, size, video_file,vendor_address,vendor_business_name,vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state  
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)`;
 
     const values = [
       category,
@@ -126,7 +133,11 @@ router.post(
       size,
       videoFile,
       vendor_address,
-      vendor_business_name
+      vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state
     ];
 
     db.query(query, values, (err, result) => {
