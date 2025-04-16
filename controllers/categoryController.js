@@ -4,7 +4,7 @@ const Category = require("../models/categoryModel");
 const addCategory = (req, res) => {
     const { metalType, category, taxSlab, hsnCode, rBarcode } = req.body;
 
-    // Check if at least one required field is provided
+    // Check if at least one required fieldy is provided
     if (!metalType && !category && !taxSlab && !hsnCode && !rBarcode) {
         return res.status(400).json({ error: "At least one field is required" });
     }
