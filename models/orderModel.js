@@ -33,6 +33,15 @@ const Order = {
       delivery_long,
       delivery_address,
       size,
+      vendor_address,
+      vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state,
+      ordered_address,
+      ordered_city,
+      ordered_state,
     } = orderData;
 
     const query = `
@@ -42,8 +51,15 @@ const Order = {
         making_charge_percentage, total_mc, wastage_on, wastage_percentage,
         wastage_weight, total_weight, huid_number, product_image, total_price, product_code,
         product_id, order_id, pro_id, ordered_vendor, vendor_product,
-        delivery_lat, delivery_long, delivery_address, size
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+        delivery_lat, delivery_long, delivery_address, size,product_vendor_address,business_name,product_vendor_mobile,
+      product_vendor_city,
+      product_vendor_pincode,
+      product_vendor_state,
+        ordered_address,
+      ordered_city,
+      ordered_state
+      
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?)
     `;
 
     db.query(
@@ -79,6 +95,15 @@ const Order = {
         delivery_long,
         delivery_address,
         size,
+        vendor_address,
+      vendor_business_name,
+      vendor_mobile,
+      vendor_city,
+      vendor_pincode,
+      vendor_state,
+      ordered_address,
+      ordered_city,
+      ordered_state,
       ],
       callback
     );

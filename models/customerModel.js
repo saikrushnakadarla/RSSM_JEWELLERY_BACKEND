@@ -5,6 +5,14 @@ const Customer = {
     db.query("SELECT * FROM customers", callback);
   },
 
+  getById: (id, callback) => {
+    db.query("SELECT * FROM customers WHERE id = ?", [id], (err, results) => {
+      if (err || results.length === 0)
+        return callback(err || new Error("Not Found"));
+      callback(null, results[0]);
+    });
+  },
+
   create: (data, callback) => {
     db.query("INSERT INTO customers SET ?", data, callback);
   },
@@ -19,6 +27,14 @@ const Customer = {
 
   getByMobile: (mobile, callback) => {
     db.query("SELECT * FROM customers WHERE mobile = ?", mobile, callback);
+  },
+
+  update: (id, data, callback) => {
+    db.query("UPDATE customers SET ? WHERE id = ?", [data, id], callback);
+  },
+
+  delete: (id, callback) => {
+    db.query("DELETE FROM customers WHERE id = ?", [id], callback);
   },
 };
 

@@ -38,9 +38,11 @@ const Vendor = {
   updateVendor: (vendorId, vendorData, callback) => {
     const {
       vendorName,
+      businessName,
       mobile,
       email,
-      address,
+      address1,
+      address2,
       city,
       pincode,
       state,
@@ -59,7 +61,7 @@ const Vendor = {
     const query = password
       ? `
         UPDATE vendors SET 
-          vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
+          vendor_name = ?, business_name=?,mobile = ?, email = ?, address1 = ?,address2 = ?, city = ?, 
           pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
           bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
           pan_card = ?, aadhaar_card = ?, password = ? 
@@ -67,7 +69,7 @@ const Vendor = {
       `
       : `
         UPDATE vendors SET 
-          vendor_name = ?, mobile = ?, email = ?, address = ?, city = ?, 
+          vendor_name = ?,business_name=?,mobile = ?, email = ?, address1 = ?,address2 = ?, city = ?, 
           pincode = ?, state = ?, state_code = ?, bank_account_number = ?, 
           bank_name = ?, ifsc_code = ?, branch = ?, gst_number = ?, 
           pan_card = ?, aadhaar_card = ? 
@@ -77,10 +79,12 @@ const Vendor = {
     // Adjust the values array based on whether the password is included
     const values = password
       ? [
-          vendorName,
-          mobile,
-          email,
-          address,
+        vendorName,
+        businessName,
+        mobile,
+        email,
+        address1,
+        address2,
           city,
           pincode,
           state,
@@ -96,10 +100,12 @@ const Vendor = {
           vendorId,
         ]
       : [
-          vendorName,
-          mobile,
-          email,
-          address,
+        vendorName,
+        businessName,
+        mobile,
+        email,
+        address1,
+        address2,
           city,
           pincode,
           state,
