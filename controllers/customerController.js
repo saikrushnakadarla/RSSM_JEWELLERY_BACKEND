@@ -26,7 +26,12 @@ exports.getCustomerById = (req, res) => {
 };
 
 exports.getCustomerByName = (req, res) => {
-  const { trade_name, mobile } = req.query;
+  let { trade_name, mobile } = req.query;
+
+  trade_name = trade_name?.trim();
+  mobile = mobile?.trim();
+
+  console.log("🔍 Received query:", { trade_name, mobile });
 
   if (!trade_name && !mobile) {
     return res
@@ -36,23 +41,33 @@ exports.getCustomerByName = (req, res) => {
 
   const callback = (err, results) => {
     if (err) {
-      console.error("Error fetching customer:", err);
+      console.error("❌ Error fetching customer:", err);
       return res.status(500).json({ error: "Failed to retrieve customer" });
     }
+
+    console.log("📦 Query results:", results);
 
     if (!results || results.length === 0) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    res.json(results[0]); // return the first matching result
+    res.json(results[0]);
   };
 
-  if (trade_name) {
+  // 🆕 Search with both if available
+  if (trade_name && mobile) {
+    db.query(
+      "SELECT * FROM customers WHERE TRIM(trade_name) = ? AND TRIM(mobile) = ?",
+      [trade_name, mobile],
+      callback
+    );
+  } else if (trade_name) {
     Customer.getByName(trade_name, callback);
   } else {
     Customer.getByMobile(mobile, callback);
   }
 };
+
 
 exports.updateCustomer = (req, res) => {
   const { id } = req.params;

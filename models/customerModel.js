@@ -17,16 +17,21 @@ const Customer = {
     db.query("INSERT INTO customers SET ?", data, callback);
   },
 
+  // Change your getByName and getByMobile to this:
   getByName: (trade_name, callback) => {
     db.query(
-      "SELECT * FROM customers WHERE trade_name = ?",
-      trade_name,
+      "SELECT * FROM customers WHERE LOWER(TRIM(trade_name)) = LOWER(TRIM(?))",
+      [trade_name],
       callback
     );
   },
 
   getByMobile: (mobile, callback) => {
-    db.query("SELECT * FROM customers WHERE mobile = ?", mobile, callback);
+    db.query(
+      "SELECT * FROM customers WHERE TRIM(mobile) = TRIM(?)",
+      [mobile],
+      callback
+    );
   },
 
   update: (id, data, callback) => {
