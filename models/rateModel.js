@@ -33,7 +33,7 @@ const RateModel = {
   },
 
   getLatestRate: (callback) => {
-    const query = "SELECT * FROM Rates ORDER BY id DESC LIMIT 1";
+    const query = "SELECT * FROM rates ORDER BY id DESC LIMIT 1";
     db.query(query, callback);
   },
 };
