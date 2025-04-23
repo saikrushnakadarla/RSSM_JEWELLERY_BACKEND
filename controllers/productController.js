@@ -95,7 +95,7 @@ exports.getProducts = (req, res) => {
 
     res.json(products);
   });
-};
+}
 
 exports.uploadExcel = async (req, res) => {
   if (!req.file) {
