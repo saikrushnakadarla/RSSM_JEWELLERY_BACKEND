@@ -19,9 +19,16 @@ const addSubCategory = (req, res) => {
         console.error("Error inserting subcategory:", err);
         return res.status(500).json({ error: "Database error" });
       }
-      res.status(201).json({
-        message: "SubCategory added successfully",
-        id: result.insertId,
+
+      const insertedId = result.insertId;
+
+      // Fetch the full inserted row
+      db.query("SELECT * FROM subcategories WHERE id = ?", [insertedId], (err, rows) => {
+        if (err) {
+          console.error("Error fetching inserted subcategory:", err);
+          return res.status(500).json({ error: "Database error" });
+        }
+        res.status(201).json(rows[0]); // return the full row
       });
     }
   );

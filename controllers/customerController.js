@@ -1,7 +1,10 @@
 const Customer = require("../models/customerModel");
+const db = require("../db"); // Adjust the path if needed
 
 exports.getCustomers = (req, res) => {
-  Customer.getAll((err, results) => {
+  const vendorId = req.query.vendor_id;
+
+  Customer.getByVendorId(vendorId, (err, results) => {
     if (err)
       return res.status(500).json({ error: "Failed to retrieve customers" });
     res.json(results);
@@ -10,6 +13,14 @@ exports.getCustomers = (req, res) => {
 
 exports.createCustomer = (req, res) => {
   const customerData = req.body;
+  const vendorId = req.body.vendor_id; // Ensure vendor_id is passed
+
+  if (!vendorId) {
+    return res.status(400).json({ error: "Vendor ID is required" });
+  }
+
+  customerData.vendor_id = vendorId;
+
   Customer.create(customerData, (err, result) => {
     if (err) return res.status(500).json({ error: "Insert failed" });
     res.status(201).json({ id: result.insertId, ...customerData });
@@ -18,7 +29,8 @@ exports.createCustomer = (req, res) => {
 
 exports.getCustomerById = (req, res) => {
   const { id } = req.params;
-  Customer.getById(id, (err, customer) => {
+  const { vendor_id } = req.query;
+  Customer.getById(id, vendor_id, (err, customer) => {
     if (err || !customer)
       return res.status(404).json({ error: "Customer not found" });
     res.json(customer);
@@ -68,14 +80,33 @@ exports.getCustomerByName = (req, res) => {
   }
 };
 
-
 exports.updateCustomer = (req, res) => {
   const { id } = req.params;
   const updatedData = req.body;
 
-  Customer.update(id, updatedData, (err, result) => {
-    if (err) return res.status(500).json({ error: "Update failed" });
-    res.json({ message: "Customer updated successfully" });
+  console.log("Received update for customer:", id, updatedData); // Debug log
+
+  if (updatedData.vendor_id) {
+    console.warn("Warning: vendor_id in update data, removing.");
+    delete updatedData.vendor_id;
+  }
+
+  db.query("SELECT * FROM customers WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      console.error("Database error:", err); // Add this line
+      return res.status(500).json({ error: "Error fetching customer" });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
+
+    Customer.update(id, updatedData, (err, result) => {
+      if (err) {
+        console.error("Update error:", err); // Add this line
+        return res.status(500).json({ error: "Update failed" });
+      }
+      res.json({ message: "Customer updated successfully" });
+    });
   });
 };
 

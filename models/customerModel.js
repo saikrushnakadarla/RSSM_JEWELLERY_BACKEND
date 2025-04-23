@@ -5,16 +5,33 @@ const Customer = {
     db.query("SELECT * FROM customers", callback);
   },
 
-  getById: (id, callback) => {
-    db.query("SELECT * FROM customers WHERE id = ?", [id], (err, results) => {
-      if (err || results.length === 0)
-        return callback(err || new Error("Not Found"));
-      callback(null, results[0]);
-    });
+  getByVendorId: (vendorId, callback) => {
+    db.query(
+      "SELECT * FROM customers WHERE vendor_id = ?",
+      [vendorId],
+      callback
+    );
+  },
+
+  findById: (id, callback) => {
+    db.query("SELECT * FROM customers WHERE id = ?", [id], callback);
   },
 
   create: (data, callback) => {
     db.query("INSERT INTO customers SET ?", data, callback);
+  },
+
+  // Modify your getById and other methods similarly to filter by vendor_id
+  getById: (id, vendorId, callback) => {
+    db.query(
+      "SELECT * FROM customers WHERE id = ? AND vendor_id = ?",
+      [id, vendorId],
+      (err, results) => {
+        if (err || results.length === 0)
+          return callback(err || new Error("Not Found"));
+        callback(null, results[0]);
+      }
+    );
   },
 
   // Change your getByName and getByMobile to this:
