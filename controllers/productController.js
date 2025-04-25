@@ -89,7 +89,7 @@ exports.getProducts = (req, res) => {
     const products = results.map((product) => ({
       ...product,
       product_image: product.product_image
-        ? `http://localhost:5000/uploads/images/${product.product_image}`
+        ? `https://rssmjewellers.com:6001/uploads/images/${product.product_image}`
         : null,
     }));
 
