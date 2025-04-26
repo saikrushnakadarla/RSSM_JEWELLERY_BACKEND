@@ -26,28 +26,11 @@ const addVendor = (req, res) => {
     vendorCode,
   } = req.body;
 
-  if (
-    !vendorName ||
-    !businessName ||
-    !mobile ||
-    !email ||
-    !address1 ||
-    !address2 ||
-    !city ||
-    !pincode ||
-    !state ||
-    !stateCode ||
-    !bankAccountNumber ||
-    !bankName ||
-    !ifscCode ||
-    !branch ||
-    !gstNumber ||
-    !panCard ||
-    !aadhaarCard ||
-    !password ||
-    !vendorCode
-  ) {
-    return res.status(400).json({ error: "All fields are required" });
+  // Check mandatory fields
+  if (!vendorName || !businessName || !mobile || !email || !address1) {
+    return res.status(400).json({ 
+      error: "These fields are required: Vendor Name, Business Name, Mobile, Email, Address1" 
+    });
   }
 
   const values = [
@@ -56,20 +39,20 @@ const addVendor = (req, res) => {
     mobile,
     email,
     address1,
-    address2,
-    city,
-    pincode,
-    state,
-    stateCode,
-    bankAccountNumber,
-    bankName,
-    ifscCode,
-    branch,
-    gstNumber,
-    panCard,
-    aadhaarCard,
-    password,
-    vendorCode,
+    address2 || null,
+    city || null,
+    pincode || null,
+    state || null,
+    stateCode || null,
+    bankAccountNumber || null,
+    bankName || null,
+    ifscCode || null,
+    branch || null,
+    gstNumber || null,
+    panCard || null,
+    aadhaarCard || null,
+    password || null,
+    vendorCode || null,
   ];
 
   Vendor.addVendor(values, (err, result) => {
