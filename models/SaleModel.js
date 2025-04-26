@@ -8,9 +8,9 @@ const Sales = {
         aadhaar_card, gst_number, pan_card, date, invoiceNumber, 
         productCode, category, subcategory, purity, grossWeight, netWeight,
         mc_type, mc_per_gram, total_mc, rate, amount, total_amount,
-        huid, size, vendor_id, old_gold_amount, net_payable_amount,
+        huid, size, tax_percentage, tax_amt, total_price, vendor_id, old_gold_amount, net_payable_amount,
         cash_amount, card_amount, cheque_amount, online_amount
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     // Update values array to include all fields:
@@ -42,6 +42,9 @@ const Sales = {
       data.total_amount,
       data.huid,
       data.size,
+      data.tax_percentage,
+      data.tax_amt,
+      data.total_price,
       data.vendor_id,
       data.old_gold_amount || 0,
       data.net_payable_amount || 0,
@@ -80,7 +83,7 @@ const Sales = {
         aadhaar_card = ?, gst_number = ?, pan_card = ?, date = ?, invoiceNumber = ?, 
         productCode = ?, category = ?, subcategory = ?, purity = ?, grossWeight = ?, netWeight = ?,
         mc_type = ?, mc_per_gram = ?, total_mc = ?, rate = ?, total_amount = ?,
-        huid = ?, size = ?
+        huid = ?, size = ?, tax_percentage = ?, tax_amt = ?, total_price = ?
       WHERE id = ?
     `;
 
@@ -111,6 +114,9 @@ const Sales = {
       data.total_amount,
       data.huid,
       data.size,
+      data.tax_percentage,
+      data.tax_amt,
+      data.total_price,
       id,
     ];
 
