@@ -80,7 +80,8 @@ router.post(
       vendor_mobile,
       vendor_city,
       vendor_pincode,
-      vendor_state
+      vendor_state,
+      vendor_gst
     } = req.body;
 
     const productImages = req.files["productImage"]
@@ -103,8 +104,8 @@ router.post(
         total_price, product_code, vendor_id, vendor_name, size, video_file,vendor_address,vendor_business_name,vendor_mobile,
       vendor_city,
       vendor_pincode,
-      vendor_state  
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?)`;
+      vendor_state  ,vendor_gst
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?)`;
 
     const values = [
       category,
@@ -137,7 +138,8 @@ router.post(
       vendor_mobile,
       vendor_city,
       vendor_pincode,
-      vendor_state
+      vendor_state,
+      vendor_gst
     ];
 
     db.query(query, values, (err, result) => {
