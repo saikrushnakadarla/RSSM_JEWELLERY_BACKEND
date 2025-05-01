@@ -4,12 +4,7 @@ const db = require("../db");
 
 router.put("/orders/update-status/:id", (req, res) => {
   const { id } = req.params;
-  const {
-    status,
-    pickup_lat,
-    pickup_long,
-    pickup_address
-  } = req.body;
+  const { status, pickup_lat, pickup_long, pickup_address } = req.body;
 
   let sql;
   let values;
@@ -23,13 +18,7 @@ router.put("/orders/update-status/:id", (req, res) => {
           pickup_address = ?
       WHERE id = ?
     `;
-    values = [
-      status,
-      pickup_lat,
-      pickup_long,
-      pickup_address,
-      id
-    ];
+    values = [status, pickup_lat, pickup_long, pickup_address, id];
   } else {
     sql = "UPDATE orders SET status = ? WHERE id = ?";
     values = [status, id];
@@ -44,8 +33,6 @@ router.put("/orders/update-status/:id", (req, res) => {
     }
   });
 });
-
-
 
 // API to update product quantity only once per order ID
 router.get("/update-quantity", (req, res) => {
@@ -64,10 +51,10 @@ router.get("/update-quantity", (req, res) => {
     // Use a Set to track processed product IDs
     const processedProducts = new Set();
 
-    results.forEach(order => {
+    results.forEach((order) => {
       if (!processedProducts.has(order.pro_id)) {
         processedProducts.add(order.pro_id);
-        
+
         const updateQuery = `UPDATE products SET quantity = quantity - 1 WHERE id = ? AND quantity > 0`;
 
         db.query(updateQuery, [order.pro_id], (updateErr) => {
@@ -92,8 +79,6 @@ router.delete("/orders/delete-order/:id", async (req, res) => {
     // Use db.promise().execute() to return a proper result array
     const [result] = await db.promise().execute(deleteQuery, [orderId]);
 
-   
-
     if (result.affectedRows > 0) {
       res.status(200).json({ message: "Order deleted successfully" });
     } else {
@@ -104,7 +89,6 @@ router.delete("/orders/delete-order/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 // Get assigned orders for the logged-in agent
 router.get("/orders/get-agent-orders", async (req, res) => {
@@ -139,14 +123,18 @@ router.post("/orders/update-location", async (req, res) => {
 
   try {
     // Check if the order status is "Received"
-    const [rows] = await db.promise().query("SELECT status FROM orders WHERE id = ?", [order_id]);
+    const [rows] = await db
+      .promise()
+      .query("SELECT status FROM orders WHERE id = ?", [order_id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "Order not found" });
     }
 
     if (rows[0].status === "Received") {
-      return res.status(400).json({ message: "Tracking stopped. Order already received." });
+      return res
+        .status(400)
+        .json({ message: "Tracking stopped. Order already received." });
     }
 
     // Update location if status is not "Received"
@@ -173,7 +161,9 @@ router.get("/orders/get-recieved-status", async (req, res) => {
   }
 
   try {
-    const [rows] = await db.promise().query("SELECT * FROM orders WHERE id = ?", [order_id]);
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM orders WHERE id = ?", [order_id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "Order not found" });
@@ -186,8 +176,6 @@ router.get("/orders/get-recieved-status", async (req, res) => {
   }
 });
 
-
-
 // API to fetch live location of a delivery agent for a specific order
 router.get("/orders/get-order-location", async (req, res) => {
   try {
@@ -197,10 +185,9 @@ router.get("/orders/get-order-location", async (req, res) => {
     }
 
     // Use db.promise().query() to ensure a Promise-based query
-    const [rows] =  await db.promise().query(
-      "SELECT * FROM orders WHERE id = ?",
-      [order_id]
-    );
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM orders WHERE id = ?", [order_id]);
 
     if (rows.length === 0) {
       return res.status(404).json({ error: "Order not found" });
@@ -252,52 +239,70 @@ router.post("/orders/assign-agent", async (req, res) => {
 });
 
 router.put("/orders/update-invoice/:id", (req, res) => {
-    const orderId = req.params.id;
-    const { invoice_number } = req.body;
+  const orderId = req.params.id;
+  const { invoice_number } = req.body;
 
-    const query = "UPDATE orders SET invoice = ? WHERE id = ?";
+  const query = "UPDATE orders SET invoice = ? WHERE id = ?";
 
-    db.query(query, [invoice_number, orderId], (err, result) => {
-        if (err) {
-            console.error("Error updating invoice number:", err);
-            return res.status(500).json({ error: "Failed to update invoice number" });
-        }
+  db.query(query, [invoice_number, orderId], (err, result) => {
+    if (err) {
+      console.error("Error updating invoice number:", err);
+      return res.status(500).json({ error: "Failed to update invoice number" });
+    }
 
-        res.status(200).json({ message: "Invoice number updated successfully" });
-    });
+    res.status(200).json({ message: "Invoice number updated successfully" });
+  });
 });
-
-
-
-
 
 // GET /orders/latest-invoice/:productId
 router.get("/orders/latest-invoice/:vendorId", async (req, res) => {
-    const vendorId = req.params.vendorId;
+  const vendorId = req.params.vendorId;
 
-    try {
-        const [result] = await db.promise().query(`
+  try {
+    const [result] = await db.promise().query(
+      `
             SELECT invoice FROM orders 
             WHERE product_id = ? AND invoice IS NOT NULL
             ORDER BY CAST(SUBSTRING(invoice, 4) AS UNSIGNED) DESC
             LIMIT 1
-        `, [vendorId]);
+        `,
+      [vendorId]
+    );
 
-        if (result.length > 0) {
-            res.json({ latestInvoiceNumber: result[0].invoice });
-        } else {
-            res.json({ latestInvoiceNumber: null });
-        }
-    } catch (err) {
-        console.error("Error fetching latest invoice:", err);
-        res.status(500).json({ error: "Server error" });
+    if (result.length > 0) {
+      res.json({ latestInvoiceNumber: result[0].invoice });
+    } else {
+      res.json({ latestInvoiceNumber: null });
     }
+  } catch (err) {
+    console.error("Error fetching latest invoice:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
+router.put("/decrement/:productCode", async (req, res) => {
+  const { productCode } = req.params;
 
+  try {
+    // Decrease quantity by 1 but only if it's greater than 0
+    const [result] = await db
+      .promise()
+      .query(
+        `UPDATE products SET quantity = quantity - 1 WHERE product_code = ? AND quantity > 0`,
+        [productCode]
+      );
 
+    if (result.affectedRows === 0) {
+      return res
+        .status(400)
+        .json({ message: "Product not found or quantity already 0" });
+    }
 
+    res.status(200).json({ message: "Quantity updated successfully" });
+  } catch (err) {
+    console.error("Error updating product quantity:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-
-
-module.exports = router; 
+module.exports = router;
