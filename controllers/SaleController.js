@@ -17,7 +17,7 @@ exports.createSale = (req, res) => {
       address: vendor_info.address,
       city: vendor_info.city,
       pincode: vendor_info.pincode,
-      state: vendor_info.state,
+      state: vendor_info.state||"",
       state_code: vendor_info.state_code,
       aadhaar_card: vendor_info.aadhaar_card,
       gst_number: vendor_info.gst_number,

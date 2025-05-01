@@ -20,6 +20,7 @@ const salesRoutes = require("./routes/SaleRoutes");
 const invoiceRoutes = require("./routes/invoiceRoute");
 const customerRoutes = require("./routes/customerRoute");
 const OlditemsRoutes = require("./routes/OlditemsRoutes");
+const accountGroupRoutes = require('./routes/accountGroup');
 
 const app = express();
 const PORT = 5000;
@@ -45,9 +46,9 @@ app.use("/", statusRoute);
 app.use("/", agentRoutes);
 app.use("/api", addProductRoute);
 
-// app.use("/api/vendors", vendorRoutes);
-
 app.use("/api/customers", customerRoutes);
+
+app.use("/api", accountGroupRoutes);
 
 app.use("/api", salesRoutes);
 
