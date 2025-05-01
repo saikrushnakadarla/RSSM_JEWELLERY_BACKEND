@@ -46,7 +46,7 @@ const mysql = require("mysql2");
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "ksk1005",
+    password: "ksk@1005",
     database: "rssm_db",
     port: 3306,
   });
