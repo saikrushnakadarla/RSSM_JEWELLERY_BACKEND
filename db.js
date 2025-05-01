@@ -8,13 +8,13 @@ const mysql = require("mysql2");
 //     port: 3307,
 //   });
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Tharun@123",
-  database: "rssm_db",
-  port: 3307,
-});
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "Tharun@123",
+//   database: "rssm_db",
+//   port: 3307,
+// });
 
 // const db = mysql.createConnection({
 //   host: "localhost",
@@ -42,6 +42,15 @@ const db = mysql.createConnection({
 //   database: "rssm_db",
 //   port: 3307,
 // }
+
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "ksk@1005",
+    database: "rssm_db",
+    port: 3306,
+  });
 
 // const db = mysql.createConnection({
 //     host: "localhost",
