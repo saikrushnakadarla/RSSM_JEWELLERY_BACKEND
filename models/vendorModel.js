@@ -1,7 +1,6 @@
 const db = require("../db");
 
 const Vendor = {
-  
   addVendor: (values, callback) => {
     const query = `
       INSERT INTO vendors (
@@ -21,6 +20,14 @@ const Vendor = {
       } else {
         callback(null, results);
       }
+    });
+  },
+
+  getVendorByEmail: (email, callback) => {
+    const query = `SELECT * FROM vendors WHERE email = ?`;
+    db.query(query, [email], (err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]); // return first matching vendor if exists
     });
   },
 
@@ -79,12 +86,12 @@ const Vendor = {
     // Adjust the values array based on whether the password is included
     const values = password
       ? [
-        vendorName,
-        businessName,
-        mobile,
-        email,
-        address1,
-        address2,
+          vendorName,
+          businessName,
+          mobile,
+          email,
+          address1,
+          address2,
           city,
           pincode,
           state,
@@ -100,12 +107,12 @@ const Vendor = {
           vendorId,
         ]
       : [
-        vendorName,
-        businessName,
-        mobile,
-        email,
-        address1,
-        address2,
+          vendorName,
+          businessName,
+          mobile,
+          email,
+          address1,
+          address2,
           city,
           pincode,
           state,

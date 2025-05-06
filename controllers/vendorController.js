@@ -26,43 +26,56 @@ const addVendor = (req, res) => {
     vendorCode,
   } = req.body;
 
-  // Check mandatory fields
   if (!vendorName || !businessName || !mobile || !email || !address1) {
     return res.status(400).json({ 
       error: "These fields are required: Vendor Name, Business Name, Mobile, Email, Address1" 
     });
   }
 
-  const values = [
-    vendorName,
-    businessName,
-    mobile,
-    email,
-    address1,
-    address2 || null,
-    city || null,
-    pincode || null,
-    state || null,
-    stateCode || null,
-    bankAccountNumber || null,
-    bankName || null,
-    ifscCode || null,
-    branch || null,
-    gstNumber || null,
-    panCard || null,
-    aadhaarCard || null,
-    password || null,
-    vendorCode || null,
-  ];
-
-  Vendor.addVendor(values, (err, result) => {
+  // Step 1: Check if email already exists
+  Vendor.getVendorByEmail(email, (err, existingVendor) => {
     if (err) {
-      console.error("Error inserting vendor:", err);
-      return res.status(500).json({ error: "Database error" });
+      console.error("Error checking email:", err);
+      return res.status(500).json({ error: "Database error during email check" });
     }
-    res.status(201).json({
-      message: "Registered Successfully. Please wait for admin approval.",
-      id: result.insertId,
+
+    if (existingVendor) {
+      return res.status(400).json({ error: "Email already registered. Please use a different email." });
+    }
+
+    // Step 2: Proceed with insertion
+    const values = [
+      vendorName,
+      businessName,
+      mobile,
+      email,
+      address1,
+      address2 || null,
+      city || null,
+      pincode || null,
+      state || null,
+      stateCode || null,
+      bankAccountNumber || null,
+      bankName || null,
+      ifscCode || null,
+      branch || null,
+      gstNumber || null,
+      panCard || null,
+      aadhaarCard || null,
+      password || null,
+      vendorCode || null,
+    ];
+
+    Vendor.addVendor(values, (err, result) => {
+      if (err) {
+        console.error("Error inserting vendor:", err);
+        return res.status(500).json({ error: "Database error during insertion" });
+      }
+
+      res.status(201).json({
+        message: "Registered Successfully. Please wait for admin approval.",
+        id: result.insertId,
+      });
     });
   });
 };
